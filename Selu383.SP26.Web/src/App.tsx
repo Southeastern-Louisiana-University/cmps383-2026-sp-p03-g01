@@ -1,35 +1,51 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
+function Home(){
+    return (
+      <div className="App">
+        <div className="nav">
+          <h1>Cafinated Lions</h1>
+          <ul className="nav">
+            <li className="navItem">Menu</li>
+            <li className="navItem">Rewards</li>
+            <li className="navItem">Locations</li>
+            <li className="navItem"><img src="path/to/image.jpg" alt="Bag"></img></li>
+            <li className="navItem">Account</li>
+          </ul>
+        </div>
+        <h2>Welcome to Cafinated Lions!</h2>
         <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
+          Experience the best coffee in town with our wide selection of blends and flavors. 
+          Join our rewards program to earn points and enjoy exclusive offers. 
+          Find a location near you and visit us today!
         </p>
+        
+        <div className="content">
+          <h2>Our Menu</h2>
+
+          <ul>
+            <li>
+              <div className="card">
+                <h3>Product1</h3>
+                <p>Description of Product1</p>
+              </div>
+            </li>
+            <li>
+              <div className="card">
+                <h3>Product2</h3>
+                <p>Description of Product2</p>
+              </div>
+            </li>
+            <li>
+              <div className="card">
+                <h3>Product3</h3>
+                <p>Description of Product3</p>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    )
 }
 
-export default App
+export default Home
