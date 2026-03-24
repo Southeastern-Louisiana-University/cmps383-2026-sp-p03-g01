@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Selu383.SP26.Api.Data;
 
@@ -11,9 +12,11 @@ using Selu383.SP26.Api.Data;
 namespace Selu383.SP26.Api.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20260317005904_AddItemsAndExtras")]
+    partial class AddItemsAndExtras
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -249,7 +252,7 @@ namespace Selu383.SP26.Api.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("ExtraOption", (string)null);
+                    b.ToTable("ExtraOption");
                 });
 
             modelBuilder.Entity("Selu383.SP26.Api.Features.Items.Item", b =>
@@ -280,7 +283,7 @@ namespace Selu383.SP26.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Item", (string)null);
+                    b.ToTable("Item");
                 });
 
             modelBuilder.Entity("Selu383.SP26.Api.Features.Locations.Location", b =>
@@ -310,7 +313,7 @@ namespace Selu383.SP26.Api.Migrations
 
                     b.HasIndex("ManagerId");
 
-                    b.ToTable("Locations", (string)null);
+                    b.ToTable("Locations");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
