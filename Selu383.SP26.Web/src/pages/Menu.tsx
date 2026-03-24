@@ -5,7 +5,7 @@ import { Link } from "react-router";
 
 function Menu(){
     
-    const [locations, setLocations] = useState<ItemDto[]>([]);
+    const [items, setItems] = useState<ItemDto[]>([]);
 
         useEffect(() => {
             const itemApi = `/api/items`;
@@ -15,7 +15,7 @@ function Menu(){
             })
             .then((data) => {
               console.log("items", data);
-              setLocations(data);
+              setItems(data);
             })
               .catch((error) => {
                 console.error("Error fetching items:", error);
@@ -26,9 +26,9 @@ function Menu(){
       <div>
         <h2>Here's our whole menu!</h2>
 
-         {locations.length > 0 ? (
+         {items.length > 0 ? (
         <ul>
-          {locations.map((item) => (
+          {items.map((item) => (
             <li key={item.Id}>
                 <h2>{item.Name}</h2>
                 <Link to={`/items/${item.Id}`}>View Details</Link>
