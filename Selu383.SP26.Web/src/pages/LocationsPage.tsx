@@ -8,13 +8,15 @@ function LocationsPage(){
     const [locations, setLocations] = useState<LocationDto[]>([]);
 
         useEffect(() => {
-            const locationApi = "/api/locations";
+            const locationApi = `/api/locations`;
             fetch(locationApi)
-              .then((response) => response.json() as Promise<LocationDto[]>)
-              .then((data) => {
-                console.log("locations", data);
-                setLocations(data);
-              })
+            .then((response) => {
+              return response.json() as Promise<LocationDto[]>;
+            })
+            .then((data) => {
+              console.log("locations", data);
+              setLocations(data);
+            })
               .catch((error) => {
                 console.error("Error fetching locations:", error);
               });
