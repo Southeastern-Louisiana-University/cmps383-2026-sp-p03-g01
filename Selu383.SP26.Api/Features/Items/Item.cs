@@ -5,7 +5,7 @@ namespace Selu383.SP26.Api.Features.Items;
 public class Item
 {
     public int Id { get; set; }
-    public int Price { get; set; }
+    public decimal Price { get; set; }
 
     public string Name { get; set; } = string.Empty;
 

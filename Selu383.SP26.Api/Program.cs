@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Selu383.SP26.Api.Data;
 using Selu383.SP26.Api.Features.Auth;
+using Selu383.SP26.Api.Features.Bag;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +12,9 @@ builder.Services.AddDbContext<DataContext>(options =>
 
 builder.Services.AddIdentity<User, Role>()
     .AddEntityFrameworkStores<DataContext>();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IBagService, BagService>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {

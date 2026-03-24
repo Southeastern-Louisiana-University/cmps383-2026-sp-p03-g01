@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Selu383.SP26.Api.Features.Bag;
 
 namespace Selu383.SP26.Api.Features.Items;
 
@@ -18,9 +19,10 @@ public class ItemConfiguration : IEntityTypeConfiguration<Item>
             .HasMaxLength(300);
 
         builder.HasMany(x => x.Extras)
-       .WithOne(x => x.Item)
-       .HasForeignKey(x => x.ItemId)
-       .OnDelete(DeleteBehavior.Cascade);
+           .WithOne(x => x.Item)
+           .HasForeignKey(x => x.ItemId)
+           .OnDelete(DeleteBehavior.Cascade);
 
+        builder.Property(i => i.Price).HasPrecision(18, 2);
     }
 }
