@@ -3,16 +3,6 @@ import "@/styles/App.css";
 function Home(){
     return (
       <div className="App">
-        <div className="nav">
-          <h1>Caffinated Lions</h1>
-          <ul className="nav">
-            <li className="navItem"><link>Menu</link></li>
-            <li className="navItem"><link>Rewards</link></li>
-            <li className="navItem"><link>Locations</link></li>
-            <li className="navItem"><link><img src="path/to/image.jpg" alt="Bag"></img></link></li>
-            <li className="navItem"><link>Account</link></li>
-          </ul>
-        </div>
         <h2>Welcome to Caffinated Lions!</h2>
         <p>
           Experience the best coffee in town with our wide selection of blends and flavors. 

@@ -1,16 +1,25 @@
-.nav {
+.nav,
+.nav a,
+.nav a:visited,
+.nav a:hover,
+.nav a:active {
   color: rgb(216, 180, 254);
   line-height: 1.5;
   font-weight: 400;
   background-color: rgb(54, 40, 69);
-
+ 
   display: flex;
   align-items: center;
+
+  border-radius: 10px;
 }
 
-h1{
+a{
   width: 100%;
+  color: rgb(216, 180, 254);
 }
+
+
 
 ul.nav{
   display: flex;
