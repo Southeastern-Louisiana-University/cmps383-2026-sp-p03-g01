@@ -85,14 +85,13 @@ namespace Selu383.SP26.Api.Features.Bag;
                 }
             }
 
-            // create new bag for user
+            
             var newBag = new Bag { UserId = userId, Status = BagStatus.Open };
             _db.Add(newBag);
             await _db.SaveChangesAsync();
             return newBag;
         }
 
-        // anonymous flow
         if (string.IsNullOrEmpty(sessionId))
             sessionId = GetOrCreateSessionId();
 
@@ -185,7 +184,7 @@ namespace Selu383.SP26.Api.Features.Bag;
         if (bag.Items == null || !bag.Items.Any())
             throw new InvalidOperationException("Cannot checkout an empty bag");
 
-        // In a real system you'd create an Order entity, process payment, etc.
+        
         bag.Status = BagStatus.CheckedOut;
         bag.UpdateAt = DateTime.UtcNow;
         await _db.SaveChangesAsync();

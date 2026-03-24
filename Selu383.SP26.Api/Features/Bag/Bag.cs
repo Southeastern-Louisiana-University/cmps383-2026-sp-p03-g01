@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Selu383.SP26.Api.Features.Items;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Selu383.SP26.Api.Features.Bag
 {
@@ -21,7 +22,9 @@ namespace Selu383.SP26.Api.Features.Bag
         public DateTime CreateAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdateAt { get; set; }
         public ICollection<BagItem> Items { get; set; } = new List<BagItem>();
-        public decimal Subtotal => Items.Sum(i  => i.LineTotal);
+        [NotMapped]
+        public decimal Subtotal => Items.Sum(i => i.LineTotal);
 
     }
+
 }

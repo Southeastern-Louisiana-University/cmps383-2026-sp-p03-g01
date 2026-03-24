@@ -6,7 +6,7 @@ namespace Selu383.SP26.Api.Features.Bag
     {
         Task<Bag> GetOrCreateBagAsync();
         Task AddItemAsync(int itemId, int quantity);
-        // Additional operations
+        
         Task RemoveItemAsync(int itemId);
         Task UpdateItemQuantityAsync(int itemId, int quantity);
         Task CheckoutAsync();

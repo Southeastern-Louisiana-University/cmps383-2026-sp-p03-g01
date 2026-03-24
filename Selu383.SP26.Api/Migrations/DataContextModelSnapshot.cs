@@ -249,7 +249,7 @@ namespace Selu383.SP26.Api.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("ExtraOption");
+                    b.ToTable("ExtraOption", (string)null);
                 });
 
             modelBuilder.Entity("Selu383.SP26.Api.Features.Items.Item", b =>
@@ -280,7 +280,7 @@ namespace Selu383.SP26.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Item");
+                    b.ToTable("Item", (string)null);
                 });
 
             modelBuilder.Entity("Selu383.SP26.Api.Features.Locations.Location", b =>
@@ -310,7 +310,7 @@ namespace Selu383.SP26.Api.Migrations
 
                     b.HasIndex("ManagerId");
 
-                    b.ToTable("Locations");
+                    b.ToTable("Locations", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
