@@ -1,6 +1,7 @@
 import type { LocationDto } from "@/types/LocationDto";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
+import "@/styles/App.css"
 
 export function LocationDetailPage() {
   const params = useParams();
@@ -24,11 +25,11 @@ export function LocationDetailPage() {
   }, [locationId]);
 
   return (
-    <div>
+    <div id="map">
       <h1>Location Detail Page {locationId}</h1>
-      <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer" style={{ display: "block" }}>
-        View upcoming location on map!
-      </a>
+      <div>
+        <iframe width="400px" height="400px" src="https://maps.google.com/maps?hl=en&amp;q=610%20Ned%20McGehee%20Drive,%20Hammond,%20Louisiana%2070402+(Caffinated%20Lions)&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"></iframe>
+      </div>
       <span>{location === undefined ? "Loading..." : location.address}</span>
     </div>
   );

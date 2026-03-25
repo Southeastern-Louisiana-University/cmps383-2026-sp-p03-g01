@@ -29,7 +29,7 @@ function LocationsPage(){
          {locations.length > 0 ? (
         <ul>
           {locations.map((location) => (
-            <li key={location.id}>
+            <li className="card" key={location.id}>
                 <h2>{location.name}</h2>
                 <Link to={`/locations/${location.id}`}>View Details</Link>
             </li>
