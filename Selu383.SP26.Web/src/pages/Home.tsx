@@ -1,0 +1,44 @@
+import "@/styles/App.css";
+
+function Home(){
+    return (
+      <div className="App">
+        <h2>Welcome to Caffinated Lions!</h2>
+        <p>
+          Experience the best coffee in town with our wide selection of blends and flavors. 
+          Join our rewards program to earn points and enjoy exclusive offers. 
+          Find a location near you and visit us today!
+        </p>
+        
+        <table>
+          <tr><th>Seasonal Drinks</th></tr>
+          <tr>
+            <td>
+              <div className="card">
+                <h3>Spring Tea</h3>
+                <p>A delightful taste sensation</p>
+              </div>
+            </td>
+
+            <td>
+              <div className="card">
+                <h3>Spring Coffee</h3>
+                <p>A rich and smooth blend</p>
+              </div>
+            </td>
+
+            <td>
+              <div className="card">
+                <h3>Spring Pastry</h3>
+                <p>A delicious treat for any time of day</p>
+              </div>
+            </td>
+
+          </tr>
+        </table>
+
+      </div>
+    )
+}
+
+export default Home
