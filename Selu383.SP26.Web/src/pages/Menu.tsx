@@ -1,44 +1,19 @@
 import "@/styles/App.css"
-import type { ItemDto } from "@/types/ItemDto";
-import { useEffect, useState } from "react";
-import { Link } from "react-router";
 
 function Menu(){
-    
-    const [items, setItems] = useState<ItemDto[]>([]);
-
-        useEffect(() => {
-            const itemApi = "/api/items";
-            fetch(itemApi)
-            .then((response) => {
-                return response.json() as Promise<ItemDto[]>;
-            })
-            .then((data) => {
-              console.log("items", data);
-              setItems(data);
-            })
-              .catch((error) => {
-                console.error("Error fetching items:", error);
-              });
-          }, []);
-    
     return (
       <div>
         <h2>Here's our whole menu!</h2>
-
-         {items.length > 0 ? (
         <ul>
-          {items.map((item) => (
-            <li key={item.Id}>
-                <h2>{item.Name}</h2>
-                <Link to={`/items/${item.Id}`}>View Details</Link>
-            </li>
-          ))}
+          <li className="card">
+            <h2>Hypothetical Menu Item</h2>
+            <p>It's a great item, you should try it!</p>
+          </li>
+          <li className="card">
+            <h2>Hypothetical Menu Item 2</h2>
+            <p>It's an even better item, you should try it!</p>
+          </li>
         </ul>
-      ) : (
-        <p>No items available.</p>
-      )}
-
       </div>
     )
 }

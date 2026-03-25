@@ -10,30 +10,33 @@ function Home(){
           Find a location near you and visit us today!
         </p>
         
-        <div className="content">
-          <h2>Seasonal Items</h2>
+        <table>
+          <tr><th>Seasonal Drinks</th></tr>
+          <tr>
+            <td>
+              <div className="card">
+                <h3>Spring Tea</h3>
+                <p>A delightful taste sensation</p>
+              </div>
+            </td>
 
-          <ul>
-            <li>
+            <td>
               <div className="card">
-                <h3>Product1</h3>
-                <p>Description of Product1</p>
+                <h3>Spring Coffee</h3>
+                <p>A rich and smooth blend</p>
               </div>
-            </li>
-            <li>
+            </td>
+
+            <td>
               <div className="card">
-                <h3>Product2</h3>
-                <p>Description of Product2</p>
+                <h3>Spring Pastry</h3>
+                <p>A delicious treat for any time of day</p>
               </div>
-            </li>
-            <li>
-              <div className="card">
-                <h3>Product3</h3>
-                <p>Description of Product3</p>
-              </div>
-            </li>
-          </ul>
-        </div>
+            </td>
+
+          </tr>
+        </table>
+
       </div>
     )
 }

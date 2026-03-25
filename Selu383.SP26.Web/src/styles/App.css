@@ -19,7 +19,7 @@ a{
   color: rgb(216, 180, 254);
 }
 
-#map{
+#map, table{
   display: flex;
   flex-direction: column;
   align-items: center;
