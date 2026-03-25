@@ -8,7 +8,7 @@ function Menu(){
     const [items, setItems] = useState<ItemDto[]>([]);
 
         useEffect(() => {
-            const itemApi = `/api/items`;
+            const itemApi = "/api/items";
             fetch(itemApi)
             .then((response) => {
                 return response.json() as Promise<ItemDto[]>;
@@ -32,7 +32,6 @@ function Menu(){
             <li key={item.Id}>
                 <h2>{item.Name}</h2>
                 <Link to={`/items/${item.Id}`}>View Details</Link>
-                //The "extra options" stuff still needs to be added but idk how to do that rn.
             </li>
           ))}
         </ul>

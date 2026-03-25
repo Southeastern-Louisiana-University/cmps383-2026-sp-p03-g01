@@ -8,7 +8,7 @@ function LocationsPage(){
     const [locations, setLocations] = useState<LocationDto[]>([]);
 
         useEffect(() => {
-            const locationApi = `/api/locations`;
+            const locationApi = "/api/locations";
             fetch(locationApi)
             .then((response) => {
               return response.json() as Promise<LocationDto[]>;
