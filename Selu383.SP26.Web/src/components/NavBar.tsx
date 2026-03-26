@@ -6,7 +6,7 @@ export function NavBar() {
   return (
     <div>
     <div className="nav">
-      <Link to="/" id="home"><h1>Caffinated Lions</h1></Link>
+      <Link to="/" id="home"><h1>Caffeinated Lions</h1></Link>
       <ul className="nav">
         <li className="navItem"><Link to="/Menu">Menu</Link></li>
         <li className="navItem"><Link to="/Rewards">Rewards</Link></li>
