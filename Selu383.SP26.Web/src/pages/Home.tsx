@@ -2,6 +2,8 @@ import "@/styles/App.css";
 
 function Home(){
     return (
+
+      //This assumes the user is not logged in, so I need to get the authentication stuff set up.
       <div className="App">
         <h2>Welcome to Caffeinated Lions!</h2>
         <p>
@@ -11,7 +13,7 @@ function Home(){
         </p>
         
         <table>
-          <tr><th>Seasonal Drinks</th></tr>
+          <tr><th>Featured Drinks</th></tr>
           <tr>
             <td>
               <div className="card">
