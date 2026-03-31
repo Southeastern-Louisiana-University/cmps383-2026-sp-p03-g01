@@ -1,5 +1,5 @@
 #navIcon {
-  width: 10%;
+  width: 25%;
   margin-right: 10px;
 }
 
@@ -13,6 +13,51 @@
     margin-left: 10px;
 }
 
+#profileIcon {
+    width: 2.5%;
+    border-radius: 50%;
+}
+
+.headLeft {
+  display: flex;
+  align-items: left;
+}
+
+.headRight {
+  display: flex;
+  align-items: right;
+  gap: 10px;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.head ul {
+  display: flex;
+  list-style: none;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+}
+
+button.accountButtons {
+  background-color: rgb(216, 180, 254);
+  border: none;
+  border-radius: 10px;
+  font-size: 1em;
+  font-weight: 400;
+}
+
+/*This is probably the worst way to do this but whatever I guess. To whoever needs to edit this next, I'm sorry.*/
+.head,
+.head a,
+.head a:visited,
+.head a:hover,
+.head a:active,
 .nav,
 .nav a,
 .nav a:visited,
@@ -26,12 +71,10 @@
   text-decoration: none;
 }
 
-ul.nav{
+nav.ul{
   list-style: none;
 }
 
 li {
   display: inline-block;
 }
-
-

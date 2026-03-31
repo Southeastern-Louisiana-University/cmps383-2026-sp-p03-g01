@@ -1,6 +1,5 @@
 import { Routes, Route } from "react-router";
 
-import { HeadBar }  from "@/components/HeadBar";
 import { NavBar } from "@/components/NavBar";
 
 import Home from "@/pages/Home";
@@ -15,7 +14,6 @@ import { LocationDetailPage } from "@/pages/LocationDetailPage";
 export function Router() {
   return (
     <Routes>
-      <Route element={<HeadBar/>}/>
       <Route element={<NavBar />}>
         <Route index element={<Home />} />
         <Route path="menu" element={<Menu />} />

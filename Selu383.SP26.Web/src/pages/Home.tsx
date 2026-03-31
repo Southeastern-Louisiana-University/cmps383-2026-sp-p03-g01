@@ -5,7 +5,7 @@ function Home(){
 
       //This assumes the user is not logged in, so I need to get the authentication stuff set up.
       <div className="App">
-        <h2>Welcome to Caffeinated Lions!</h2>
+        <h2>Welcome!</h2>
         <p>
           Experience the best coffee in town with our wide selection of blends and flavors. 
           Join our rewards program to earn points and enjoy exclusive offers. 
