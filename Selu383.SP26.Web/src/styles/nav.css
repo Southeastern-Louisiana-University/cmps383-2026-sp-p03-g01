@@ -1,5 +1,5 @@
 #navIcon {
-  width: 25%;
+  width: 10%;
   margin-right: 10px;
 }
 
@@ -16,6 +16,12 @@
 #profileIcon {
     width: 2.5%;
     border-radius: 50%;
+}
+
+.home {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .headLeft {
@@ -46,18 +52,31 @@
 
 button.accountButtons {
   background-color: rgb(216, 180, 254);
+  color: rgb(54, 40, 69);
   border: none;
-  border-radius: 10px;
+  border-radius: 5px;
   font-size: 1em;
   font-weight: 400;
 }
 
+.totalBar {
+    background-color: rgb(54, 40, 69);
+}
+
+.headLeft a {
+  color: rgb(216, 180, 254);
+  line-height: 1.5;
+  font-weight: 400;
+  text-decoration: none;
+}
+
+.headRight a {
+    color: rgb(54, 40, 69);
+    text-decoration: none;
+
+}
+
 /*This is probably the worst way to do this but whatever I guess. To whoever needs to edit this next, I'm sorry.*/
-.head,
-.head a,
-.head a:visited,
-.head a:hover,
-.head a:active,
 .nav,
 .nav a,
 .nav a:visited,
@@ -66,7 +85,6 @@ button.accountButtons {
   color: rgb(216, 180, 254);
   line-height: 1.5;
   font-weight: 400;
-  background-color: rgb(54, 40, 69);
  
   text-decoration: none;
 }
@@ -77,4 +95,12 @@ nav.ul{
 
 li {
   display: inline-block;
+}
+
+.home h1 {
+  background-color: rgb(54, 40, 69);
+  color: rgb(216, 180, 254);
+  padding: 8px 12px;
+  border-radius: 5px;
+  margin: 0;
 }

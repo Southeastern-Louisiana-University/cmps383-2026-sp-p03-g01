@@ -4,6 +4,7 @@ import "@/styles/nav.css";
 import bag from "@/assets/bag.png";
 import pin from "@/assets/pin.png";
 import icon from "@/assets/icon.png";
+import banner from "@/assets/banner.png";
 //import profile from "@/assets/default.jpg";
 //Component imports
 import { Outlet, Link } from "react-router";
@@ -15,12 +16,13 @@ import ListItem from "@mui/material/ListItem";
 export function NavBar() {
   return (
     <div>
+    <div className="totalBar">
 
-      <div className="head">
+      <div className="head" style={{ backgroundImage: `url(${banner})` }}>
         <div className="headLeft">
-          <Link to="/" className="home"><img src={icon} alt="Caffeinated Lions Icon" id="navIcon"></img></Link>
-          <Link to="/" className="home"><h1>Caffeinated Lions</h1></Link>
+          <Link to="/" className="home"><img src={icon} alt="Caffeinated Lions Icon" id="navIcon"></img><h1>Caffeinated Lions</h1></Link>
         </div>
+
         <div className="headRight">
           <ul>
             <li>
@@ -65,10 +67,10 @@ export function NavBar() {
         </Box>
       </div>
 
+    </div>
       <main>
         <Outlet />
       </main>
-      
     </div>
   );
 }
