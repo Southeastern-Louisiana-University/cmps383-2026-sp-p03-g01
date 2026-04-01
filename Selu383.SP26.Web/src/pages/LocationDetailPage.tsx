@@ -30,8 +30,7 @@ export function LocationDetailPage() {
       <div>
         <iframe width="400px" height="400px" src="https://maps.google.com/maps?hl=en&amp;q=610%20Ned%20McGehee%20Drive,%20Hammond,%20Louisiana%2070402+(Caffinated%20Lions)&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"></iframe>
       </div>
-      <span>{location === undefined ? "123 Main Street" : location.address}</span>
+      <span>{location === undefined ? "Loading..." : location.address}</span>
     </div>
   );
 }
-//replace the "123 Main Stree" with the "Loading..." text after the presentation.
