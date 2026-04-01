@@ -52,6 +52,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseStaticFiles();
+
 app
     .UseRouting()
     .UseAuthentication()
@@ -60,8 +62,6 @@ app
     {
         x.MapControllers();
     });
-
-app.UseStaticFiles();
 
 if(app.Environment.IsDevelopment())
 {

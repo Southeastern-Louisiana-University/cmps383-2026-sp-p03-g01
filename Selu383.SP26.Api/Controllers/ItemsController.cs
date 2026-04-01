@@ -68,40 +68,70 @@ public class ItemsController(DataContext dataContext) : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = RoleNames.Admin)]
-    public ActionResult<ItemDto> Create(ItemDto dto)
+    public async Task<ActionResult<ItemDto>> Create([FromForm] ItemCreateDto dto)
     {
+        var fileName = "";
+
+        if (dto.Image != null)
+        {
+            var uploadsFolder = Path.Combine("wwwroot", "images");
+
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            fileName = Guid.NewGuid() + Path.GetExtension(dto.Image.FileName);
+
+            var filePath = Path.Combine(uploadsFolder, fileName);
+
+            using var stream = new FileStream(filePath, FileMode.Create);
+            await dto.Image.CopyToAsync(stream);
+        }
+
         var item = new Item
         {
             Name = dto.Name,
             Price = dto.Price,
             Description = dto.Description,
             Nutrition = dto.Nutrition,
-            ImageUrl = dto.ImageUrl,
+            ImageUrl = fileName != "" ? "/images/" + fileName : "",
             Extras = dto.Extras
-            .Select(e => new ExtraOption
-            {
-                Name = e.Name,
-                Price = e.Price,
-                Description = e.Description
-            })
-            .ToList()
+                .Select(e => new ExtraOption
+                {
+                    Name = e.Name,
+                    Price = e.Price,
+                    Description = e.Description
+                })
+                .ToList()
         };
 
         dataContext.Set<Item>().Add(item);
         dataContext.SaveChanges();
 
-        dto.Id = item.Id;
-        for (int i = 0; i < item.Extras.Count; i++)
+        return CreatedAtAction(nameof(GetById), new { id = item.Id }, new ItemDto
         {
-            dto.Extras[i].Id = item.Extras[i].Id;
-        }
-
-        return CreatedAtAction(nameof(GetById), new { id = dto.Id }, dto);
+            Id = item.Id,
+            Name = item.Name,
+            Price = item.Price,
+            Description = item.Description,
+            Nutrition = item.Nutrition,
+            ImageUrl = item.ImageUrl,
+            Extras = item.Extras
+                .Select(e => new ExtraOptionDto
+                {
+                    Id = e.Id,
+                    Name = e.Name,
+                    Price = e.Price,
+                    Description = e.Description
+                })
+                .ToList()
+        });
     }
 
     [HttpPut("{id}")]
     [Authorize(Roles = RoleNames.Admin)]
-    public ActionResult<ItemDto> Update(int id, ItemDto dto)
+    public async Task<ActionResult<ItemDto>> Update(
+        int id,
+        [FromForm] ItemCreateDto dto)
     {
         var item = dataContext.Set<Item>()
             .FirstOrDefault(x => x.Id == id);
@@ -111,17 +141,78 @@ public class ItemsController(DataContext dataContext) : ControllerBase
             return NotFound();
         }
 
+        // update basic fields
         item.Name = dto.Name;
         item.Price = dto.Price;
         item.Description = dto.Description;
         item.Nutrition = dto.Nutrition;
-        item.ImageUrl = dto.ImageUrl;
+
+        // handle image upload (optional)
+        if (dto.Image != null)
+        {
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            // 🧹 delete old image
+            if (!string.IsNullOrEmpty(item.ImageUrl))
+            {
+                var oldPath = Path.Combine(
+                    Directory.GetCurrentDirectory(),
+                    "wwwroot",
+                    item.ImageUrl.TrimStart('/')
+                );
+
+                if (System.IO.File.Exists(oldPath))
+                {
+                    System.IO.File.Delete(oldPath);
+                }
+            }
+
+            // 💾 save new image
+            var fileName = Guid.NewGuid() + Path.GetExtension(dto.Image.FileName);
+            var filePath = Path.Combine(uploadsFolder, fileName);
+
+            using var stream = new FileStream(filePath, FileMode.Create);
+            await dto.Image.CopyToAsync(stream);
+
+            item.ImageUrl = "/images/" + fileName;
+        }
+
+        // (optional) update extras if you want consistency with POST
+        item.Extras = dto.Extras
+            .Select(e => new ExtraOption
+            {
+                Name = e.Name,
+                Price = e.Price,
+                Description = e.Description
+            })
+            .ToList();
 
         dataContext.SaveChanges();
 
-        dto.Id = item.Id;
+        // return updated DTO
+        var result = new ItemDto
+        {
+            Id = item.Id,
+            Name = item.Name,
+            Price = item.Price,
+            Description = item.Description,
+            Nutrition = item.Nutrition,
+            ImageUrl = item.ImageUrl,
+            Extras = item.Extras
+                .Select(e => new ExtraOptionDto
+                {
+                    Id = e.Id,
+                    Name = e.Name,
+                    Price = e.Price,
+                    Description = e.Description
+                })
+                .ToList()
+        };
 
-        return Ok(dto);
+        return Ok(result);
     }
 
     [HttpDelete("{id}")]
@@ -136,10 +227,27 @@ public class ItemsController(DataContext dataContext) : ControllerBase
             return NotFound();
         }
 
+        // delete image file if it exists
+        if (!string.IsNullOrEmpty(item.ImageUrl))
+        {
+            var path = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot",
+                item.ImageUrl.TrimStart('/')
+            );
+
+            if (System.IO.File.Exists(path))
+            {
+                System.IO.File.Delete(path);
+            }
+        }
+
+        // remove item from database
         dataContext.Set<Item>().Remove(item);
         dataContext.SaveChanges();
 
         return Ok();
     }
+
 }
 

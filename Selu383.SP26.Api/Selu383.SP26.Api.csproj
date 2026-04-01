@@ -21,4 +21,8 @@
     <ProjectReference Include="..\Selu383.SP26.Web\Selu383.SP26.Web.esproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="images\" />
+  </ItemGroup>
+
 </Project>
