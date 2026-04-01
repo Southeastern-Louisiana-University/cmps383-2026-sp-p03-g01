@@ -113,15 +113,6 @@ public class ItemsController(DataContext dataContext) : ControllerBase
         item.Description = dto.Description;
         item.Nutrition = dto.Nutrition;
 
-        item.Extras = dto.Extras
-        .Select(e => new ExtraOption
-        {
-            Name = e.Name,
-            Price = e.Price,
-            Description = e.Description
-        })
-        .ToList();
-
         dataContext.SaveChanges();
 
         dto.Id = item.Id;

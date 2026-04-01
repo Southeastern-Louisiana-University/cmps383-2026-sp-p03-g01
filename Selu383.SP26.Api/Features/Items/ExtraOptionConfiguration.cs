@@ -7,18 +7,8 @@ public class ExtraOptionConfiguration : IEntityTypeConfiguration<ExtraOption>
 {
     public void Configure(EntityTypeBuilder<ExtraOption> builder)
     {
-        builder.Property(e => e.Name)
-            .IsRequired()
-            .HasMaxLength(120);
-
-        builder.Property(e => e.Description)
-            .HasMaxLength(500);
-
-        builder.Property(e => e.Price).HasPrecision(18, 2);
-
-        builder.HasOne(e => e.Item)
-            .WithMany(i => i.Extras)
-            .HasForeignKey(e => e.ItemId)
-            .OnDelete(DeleteBehavior.Cascade);
+        builder.Property(x => x.Name).IsRequired().HasMaxLength(120);
+        builder.Property(x => x.Description).HasMaxLength(500);
+        builder.Property(x => x.Price).HasPrecision(18, 2);
     }
 }

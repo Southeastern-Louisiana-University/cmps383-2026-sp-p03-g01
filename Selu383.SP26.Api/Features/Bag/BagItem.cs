@@ -17,5 +17,6 @@ namespace Selu383.SP26.Api.Features.Bag
 
         [NotMapped]
         public decimal LineTotal => Quantity * UnitPriceSnapshot;
+
     }
 }
