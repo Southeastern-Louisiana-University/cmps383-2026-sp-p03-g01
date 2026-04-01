@@ -4,7 +4,6 @@ import "@/styles/nav.css";
 import bag from "@/assets/bag.png";
 import pin from "@/assets/pin.png";
 import icon from "@/assets/icon.png";
-//import banner from "@/assets/banner.png";
 //import profile from "@/assets/default.jpg";
 //Component imports
 import { Outlet, Link } from "react-router";
