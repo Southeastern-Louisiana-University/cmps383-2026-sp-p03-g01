@@ -111,7 +111,7 @@ public static class SeedHelper
         new Item { Name = "Banana Foster", Price = 8.95m, Description = "Bananas with cinnamon in a crepe, topped with a generous drizzle of caramel sauce.", Nutrition = "", Extras = new List<ExtraOption>() },
 
         // Savory Crepes
-        new Item { Name = "Matt's Scrambled Eggs", Price = 5.00m, Description = "Scrambled eggs and melted mozzarella cheese wrapped in a crepe.", Nutrition = "", Extras = new List<ExtraOption>() },
+        new Item { Name = "Matt's Scrambled Eggs", Price = 5.00m, Description = "Scrambled eggs and melted mozzarella cheese wrapped in a crepe.", Nutrition = "", Extras = new List<ExtraOption>(), ImageUrl = "https://cdn.discordapp.com/attachments/1468038490070585503/1488753523540889640/SPOILER_Matt.png?ex=69cded43&is=69cc9bc3&hm=7f10c81fed895d9ad40d383d8967c1b0875cb1635ba9a8d30b445d4f2ba1d908&" },
         new Item { Name = "Meanie Mushroom", Price = 10.50m, Description = "Sautéed mushrooms, mozzarella, tomato, and bacon inside a delicate crepe.", Nutrition = "", Extras = new List<ExtraOption>() },
         new Item { Name = "Turkey Club", Price = 10.50m, Description = "Sliced turkey, bacon, spinach, and tomato wrapped in a savory crepe.", Nutrition = "", Extras = new List<ExtraOption>() },
         new Item { Name = "Green Machine", Price = 10.00m, Description = "Spinach, artichokes, and mozzarella cheese inside a fresh crepe.", Nutrition = "", Extras = new List<ExtraOption>() },

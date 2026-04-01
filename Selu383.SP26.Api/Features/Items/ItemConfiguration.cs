@@ -24,5 +24,8 @@ public class ItemConfiguration : IEntityTypeConfiguration<Item>
            .OnDelete(DeleteBehavior.Cascade);
 
         builder.Property(i => i.Price).HasPrecision(18, 2);
+
+        builder.Property(i => i.ImageUrl)
+       .HasMaxLength(500);
     }
 }
