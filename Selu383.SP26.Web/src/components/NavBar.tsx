@@ -4,7 +4,7 @@ import "@/styles/nav.css";
 import bag from "@/assets/bag.png";
 import pin from "@/assets/pin.png";
 import icon from "@/assets/icon.png";
-import banner from "@/assets/banner.png";
+//import banner from "@/assets/banner.png";
 //import profile from "@/assets/default.jpg";
 //Component imports
 import { Outlet, Link } from "react-router";
@@ -18,7 +18,7 @@ export function NavBar() {
     <div>
     <div className="totalBar">
 
-      <div className="head" style={{ backgroundImage: `url(${banner})` }}>
+      <div className="head" >
         <div className="headLeft">
           <Link to="/" className="home"><img src={icon} alt="Caffeinated Lions Icon" id="navIcon"></img><h1>Caffeinated Lions</h1></Link>
         </div>
