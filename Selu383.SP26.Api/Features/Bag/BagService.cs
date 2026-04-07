@@ -22,9 +22,15 @@ namespace Selu383.SP26.Api.Features.Bag;
     private string? GetOrCreateSessionId()
     {
         var ctx = _http.HttpContext!;
+        
+        if (ctx.Request.Headers.TryGetValue("X-Session-Id", out var header) && Guid.TryParse(header, out _))
+            return header.ToString();
+
+        
         if (ctx.Request.Cookies.TryGetValue(SessionCookieName, out var sid) && Guid.TryParse(sid, out _))
             return sid;
 
+      
         var newSid = Guid.NewGuid().ToString();
         var cookieOptions = new CookieOptions
         {
@@ -61,9 +67,20 @@ namespace Selu383.SP26.Api.Features.Bag;
 
                     if (anon != null)
                     {
-                        MergeAnonymousBagIntoUserBag(anon, userBag);
-                        _db.Remove(anon);
-                        await _db.SaveChangesAsync();
+                        
+                        using var tx = await _db.Database.BeginTransactionAsync();
+                        try
+                        {
+                            MergeAnonymousBagIntoUserBag(anon, userBag);
+                            _db.Remove(anon);
+                            await _db.SaveChangesAsync();
+                            await tx.CommitAsync();
+                        }
+                        catch
+                        {
+                            await tx.RollbackAsync();
+                            throw;
+                        }
                     }
                 }
                 return userBag;
@@ -78,10 +95,21 @@ namespace Selu383.SP26.Api.Features.Bag;
 
                 if (anon != null)
                 {
-                    anon.UserId = userId;
-                    anon.SessionId = null;
-                    await _db.SaveChangesAsync();
-                    return anon;
+                    
+                    using var tx = await _db.Database.BeginTransactionAsync();
+                    try
+                    {
+                        anon.UserId = userId;
+                        anon.SessionId = null;
+                        await _db.SaveChangesAsync();
+                        await tx.CommitAsync();
+                        return anon;
+                    }
+                    catch
+                    {
+                        await tx.RollbackAsync();
+                        throw;
+                    }
                 }
             }
 

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Selu383.SP26.Api.Features.Auth;
 using Selu383.SP26.Api.Features.Locations;
+using Selu383.SP26.Api.Features.Items;
 
 namespace Selu383.SP26.Api.Data;
 
@@ -18,6 +19,8 @@ public static class SeedHelper
 
         await AddLocations(dataContext);
     }
+
+
 
     private static async Task AddUsers(IServiceProvider serviceProvider)
     {
@@ -81,6 +84,20 @@ public static class SeedHelper
             new Location { Name = "Location 3", Address = "789 Pine Ln", TableCount = 15 }
         );
 
+        await dataContext.SaveChangesAsync();
+    }
+
+    private static async Task AddItems(DataContext dataContext)
+    {
+        if (dataContext.Set<Item>().Any())
+        {
+            return;
+        }
+        dataContext.Set<Item>().AddRange(
+            new Item { Name = "latte", Price = 5.99m, Description = "Coffee with a hint of milk", Nutrition = "360 calories" },
+            new Item { Name = "Expresso", Price = 2.99m, Description = "Super expresso coffe", Nutrition = "100 calories" },
+            new Item { Name = "Caramel Frappe", Price = 1.99m, Description = "Sweet caramel frappe with whipped cream", Nutrition = "500 calories" }
+        );
         await dataContext.SaveChangesAsync();
     }
 }
