@@ -6,16 +6,18 @@ import {
   Text,
   View,
 } from "react-native";
+
 type Item = {
   id: number;
   name: string;
 };
+
 export default function Items() {
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://172.25.131.79:7116/api/items")
+    fetch("https://selu383-sp26-p03-g01.azurewebsites.net/api/items")
       .then((res) => res.json())
       .then((data) => {
         setItems(data);
@@ -40,7 +42,11 @@ export default function Items() {
       <FlatList
         data={items}
         keyExtractor={(item) => item.id?.toString() ?? Math.random().toString()}
-        renderItem={({ item }) => <Text style={styles.text}>{item.name}</Text>}
+        renderItem={({ item }) => (
+          <View style={styles.pill}>
+            <Text style={styles.pillText}>{item.name}</Text>
+          </View>
+        )}
       />
     </View>
   );
@@ -49,12 +55,19 @@ export default function Items() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
     padding: 20,
+    backgroundColor: "#000",
   },
-  text: {
-    fontSize: 22,
-    marginBottom: 10,
+  pill: {
+    backgroundColor: "#d8b4fe",
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    marginBottom: 12,
+  },
+  pillText: {
+    color: "#000",
+    fontSize: 20,
+    fontWeight: "600",
   },
 });

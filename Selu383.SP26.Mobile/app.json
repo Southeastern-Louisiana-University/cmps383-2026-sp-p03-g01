@@ -2,17 +2,15 @@
   "expo": {
     "name": "Caffeinated Lions",
     "slug": "caffeinated-lions",
-    "owner": "nasirsw",
+    "owner": "jsoileau2004",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-
     "splash": {
       "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#242424"
     },
-
     "scheme": "selu383sp26mobile",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -26,8 +24,9 @@
     "predictiveBackGestureEnabled": false,
     "package": "com.selu383.sp26.p03.g01",
     "extra": {
+      "router": {},
       "eas": {
-        "projectId": "6a9ea825-a249-475d-933b-c192d55eac44"
+        "projectId": "70c7e896-c4df-4733-ac1e-5d1d1167b1bc"
       }
     }
   },
@@ -53,9 +52,5 @@
   "experiments": {
     "typedRoutes": true,
     "reactCompiler": true
-  },
-  "extra": {
-    "router": {}
-  },
-  "owner": "nasirsw"
+  }
 }
