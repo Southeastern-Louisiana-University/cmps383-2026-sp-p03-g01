@@ -3,4 +3,5 @@ export interface ItemDto {
     price: number; 
     name: string; 
     description: string; 
+    imageUrl: string;
 }

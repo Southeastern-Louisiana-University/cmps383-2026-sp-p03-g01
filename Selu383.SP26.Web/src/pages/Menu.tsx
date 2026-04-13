@@ -30,6 +30,7 @@ function Menu(){
         <ul>
           {items.map((item) => (
             <li className="card"key={item.id}>
+                <img src={item.imageUrl} alt={item.name} />
                 <h2>{item.name}</h2>
                 <p>{item.description}</p>
                 <p>Price: ${item.price.toFixed(2)}</p>
