@@ -18,6 +18,7 @@ public static class SeedHelper
         await AddUsers(serviceProvider);
 
         await AddLocations(dataContext);
+        await AddItems(dataContext);
     }
 
 
@@ -94,9 +95,9 @@ public static class SeedHelper
             return;
         }
         dataContext.Set<Item>().AddRange(
-            new Item { Name = "latte", Price = 5.99m, Description = "Coffee with a hint of milk", Nutrition = "360 calories" },
-            new Item { Name = "Expresso", Price = 2.99m, Description = "Super expresso coffe", Nutrition = "100 calories" },
-            new Item { Name = "Caramel Frappe", Price = 1.99m, Description = "Sweet caramel frappe with whipped cream", Nutrition = "500 calories" }
+            new Item { Name = "latte", Price = 5.99m, Description = "Coffee with a hint of milk", Nutrition = "360 calories", ImageUrl = "https://drive.google.com/uc?export=view&id=1qwVxZ4v1a9jU46OL7sZNvZIFaT99qElC" },
+            new Item { Name = "Expresso", Price = 2.99m, Description = "Super expresso coffe", Nutrition = "100 calories", ImageUrl = "https://drive.google.com/uc?export=view&id=1qwVxZ4v1a9jU46OL7sZNvZIFaT99qElC" },
+            new Item { Name = "Caramel Frappe", Price = 1.99m, Description = "Sweet caramel frappe with whipped cream", Nutrition = "500 calories", ImageUrl = "https://drive.google.com/uc?export=view&id=1qwVxZ4v1a9jU46OL7sZNvZIFaT99qElC" }
         );
         await dataContext.SaveChangesAsync();
     }
