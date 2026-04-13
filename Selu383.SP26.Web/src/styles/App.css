@@ -1,0 +1,28 @@
+a{
+  width: 100%;
+  color: rgb(216, 180, 254);
+}
+
+#map, table{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+}
+.card{
+  background-color: rgb(54, 40, 69);
+  color: rgb(216, 180, 254);
+  border-radius: 10px;
+  padding: 20px;
+  margin: 20px;
+}
+
+.card button{
+  background-color: rgb(216, 180, 254);
+  color: rgb(54, 40, 69);
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  cursor: pointer;
+}
