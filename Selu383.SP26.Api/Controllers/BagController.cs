@@ -1,9 +1,8 @@
-﻿using Selu383.SP26.Api.Features.Bag;
+using Selu383.SP26.Api.Features.Bag;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Selu383.SP26.Api.Data;
-using Selu383.SP26.Api.Features.Items;
+using Selu383.SP26.Api.Features.Auth;
 
 
 namespace Selu383.SP26.Api.Controllers
@@ -40,6 +39,14 @@ namespace Selu383.SP26.Api.Controllers
             };
 
             return Ok(dto);
+        }
+
+        [HttpGet("checked-out")]
+        [Authorize(Roles = RoleNames.Admin + "," + RoleNames.Employee)]
+        public async Task<ActionResult<IReadOnlyList<BagDto>>> GetCheckedOutBags()
+        {
+            var bags = await _bagsService.GetCheckedOutBagsAsync();
+            return Ok(bags);
         }
 
         [HttpPost("items")]

@@ -70,6 +70,11 @@ public static class SeedHelper
         {
             Name = RoleNames.User
         });
+
+        await roleManager.CreateAsync(new Role
+        {
+            Name = RoleNames.Employee
+        });
     }
 
     private static async Task AddLocations(DataContext dataContext)

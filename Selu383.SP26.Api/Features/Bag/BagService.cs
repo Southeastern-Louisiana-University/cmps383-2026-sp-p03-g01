@@ -1,4 +1,4 @@
-﻿
+using System.Linq;
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using Selu383.SP26.Api.Data;
@@ -216,6 +216,35 @@ namespace Selu383.SP26.Api.Features.Bag;
         bag.Status = BagStatus.CheckedOut;
         bag.UpdateAt = DateTime.UtcNow;
         await _db.SaveChangesAsync();
+    }
+
+    public async Task<IReadOnlyList<BagDto>> GetCheckedOutBagsAsync()
+    {
+        var bags = await _db.Set<Bag>()
+            .AsNoTracking()
+            .Where(b => b.Status == BagStatus.CheckedOut)
+            .Include(b => b.Items)
+            .ThenInclude(i => i.Item)
+            .OrderByDescending(b => b.UpdateAt ?? b.CreateAt)
+            .ToListAsync();
+
+        return bags.Select(bag =>
+        {
+            var items = bag.Items.Select(i => new BagItemDto
+            {
+                ItemId = i.ItemId,
+                Name = i.Item?.Name ?? string.Empty,
+                Price = i.UnitPriceSnapshot,
+                Quantity = i.Quantity
+            }).ToList();
+
+            return new BagDto
+            {
+                Id = bag.Id,
+                Items = items,
+                Subtotal = items.Sum(x => x.LineTotal)
+            };
+        }).ToList();
     }
     
 }
