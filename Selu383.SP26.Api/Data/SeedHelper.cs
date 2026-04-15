@@ -80,9 +80,9 @@ public static class SeedHelper
             return;
         }
         dataContext.Set<Location>().AddRange(
-            new Location { Name = "Location 1", Address = "123 Main St", TableCount = 10 },
-            new Location { Name = "Location 2", Address = "456 Oak Ave", TableCount = 20 },
-            new Location { Name = "Location 3", Address = "789 Pine Ln", TableCount = 15 }
+            new Location { Name = "Hammond Location", Address = "110 N Cate St, Hammond, LA 70403", TableCount = 10 },
+            new Location { Name = "New York Location", Address = "72 E 1st St, New York, NY 10003", TableCount = 20 },
+            new Location { Name = "New Orleans Location", Address = "1140 S Carrollton Ave, New Orleans, LA 70118", TableCount = 15 }
         );
 
         await dataContext.SaveChangesAsync();

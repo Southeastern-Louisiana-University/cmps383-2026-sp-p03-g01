@@ -24,7 +24,6 @@
     "predictiveBackGestureEnabled": false,
     "package": "com.selu383.sp26.p03.g01",
     "extra": {
-      "router": {},
       "eas": {
         "projectId": "6cbf07ad-e455-43f5-85c2-cbebd2843879"
       }
