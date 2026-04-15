@@ -17,9 +17,9 @@ export default function Locations() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://172.25.131.79:7116/api/locations")
+    fetch("https://selu383-sp26-p03-g01.azurewebsites.net/api/locations")
       .then((res) => res.json())
-      .then((data: Location[]) => {
+      .then((data) => {
         setLocations(data);
         setLoading(false);
       })
@@ -32,7 +32,7 @@ export default function Locations() {
   if (loading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color="#d8b4fe" />
       </View>
     );
   }
@@ -42,7 +42,11 @@ export default function Locations() {
       <FlatList
         data={locations}
         keyExtractor={(loc) => loc.id.toString()}
-        renderItem={({ item }) => <Text style={styles.text}>{item.name}</Text>}
+        renderItem={({ item }) => (
+          <View style={styles.row}>
+            <Text style={styles.rowText}>{item.name}</Text>
+          </View>
+        )}
       />
     </View>
   );
@@ -51,12 +55,22 @@ export default function Locations() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
     padding: 20,
+    backgroundColor: "#000",
   },
-  text: {
-    fontSize: 22,
-    marginBottom: 10,
+
+  // FLAT, SQUARE ROWS
+  row: {
+    backgroundColor: "#1a1a1a",
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#333",
+  },
+
+  rowText: {
+    color: "#d8b4fe",
+    fontSize: 20,
+    fontWeight: "600",
   },
 });

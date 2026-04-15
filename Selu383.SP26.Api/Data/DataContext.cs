@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Selu383.SP26.Api.Features.Auth;
 using Selu383.SP26.Api.Features.Locations;
 using Selu383.SP26.Api.Features.Bag;
+using Selu383.SP26.Api.Features.Items;
 using System.Data;
 
 namespace Selu383.SP26.Api.Data;
@@ -22,6 +23,8 @@ public class DataContext : IdentityDbContext<User, Role, int, IdentityUserClaim<
     public DbSet<Role> Roles { get; set; }
     public DbSet<UserRole> UserRoles { get; set; }
     public DbSet<BagItem> BagItems { get; set; }
+    public DbSet<Bag> Bags { get; set; }
+    public DbSet<Item> Items { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -17,3 +17,12 @@ a{
   padding: 20px;
   margin: 20px;
 }
+
+.card button{
+  background-color: rgb(216, 180, 254);
+  color: rgb(54, 40, 69);
+  border: none;
+  border-radius: 5px;
+  padding: 5px;
+  cursor: pointer;
+}

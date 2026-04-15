@@ -1,98 +1,228 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+type Item = { id: number; name: string };
+type Location = { id: number; name: string };
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const [tab, setTab] = useState<"items" | "rewards" | "locations">("items");
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  const [items, setItems] = useState<Item[]>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([
+      fetch("https://selu383-sp26-p03-g01.azurewebsites.net/api/items").then(
+        (r) => r.json(),
+      ),
+      fetch(
+        "https://selu383-sp26-p03-g01.azurewebsites.net/api/locations",
+      ).then((r) => r.json()),
+    ])
+      .then(([itemsData, locationsData]) => {
+        setItems(itemsData);
+        setLocations(locationsData);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log("Error fetching data:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  const renderCard = ({ item }: { item: Item | Location }) => (
+    <View style={styles.pill}>
+      <Text style={styles.pillText}>{item.name}</Text>
+    </View>
+  );
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#d8b4fe" />
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      {/* Header */}
+      <View style={styles.headerRow}>
+        {/* ❌ Removed purple pill wrapper */}
+        <Image
+          source={require("../../assets/images/icon.png")}
+          style={styles.icon}
+        />
+        <Text style={styles.title}>Caffeinated Lions</Text>
+      </View>
+
+      {/* Segmented Control (kept exactly the same) */}
+      <View style={styles.segmentContainer}>
+        <Pressable
+          style={[
+            styles.segmentButton,
+            tab === "items" && styles.segmentActive,
+          ]}
+          onPress={() => setTab("items")}
+        >
+          <Text
+            style={[
+              styles.segmentText,
+              tab === "items" && styles.segmentTextActive,
+            ]}
+          >
+            Menu
+          </Text>
+        </Pressable>
+
+        <Pressable
+          style={[
+            styles.segmentButton,
+            tab === "rewards" && styles.segmentActive,
+          ]}
+          onPress={() => setTab("rewards")}
+        >
+          <Text
+            style={[
+              styles.segmentText,
+              tab === "rewards" && styles.segmentTextActive,
+            ]}
+          >
+            Rewards
+          </Text>
+        </Pressable>
+
+        <Pressable
+          style={[
+            styles.segmentButton,
+            tab === "locations" && styles.segmentActive,
+          ]}
+          onPress={() => setTab("locations")}
+        >
+          <Text
+            style={[
+              styles.segmentText,
+              tab === "locations" && styles.segmentTextActive,
+            ]}
+          >
+            Locations
+          </Text>
+        </Pressable>
+      </View>
+
+      {/* Content */}
+      {tab === "rewards" ? (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyText}>No rewards available yet.</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={tab === "items" ? items : locations}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderCard}
+          contentContainerStyle={{ paddingTop: 20 }}
+        />
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
+    backgroundColor: "#242424",
+    paddingTop: 60,
+    paddingHorizontal: 20,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#242424",
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+
+  /* HEADER */
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginBottom: 20,
+  },
+
+  icon: {
+    width: 40,
+    height: 40,
+    resizeMode: "contain",
+  },
+
+  title: {
+    fontSize: 26,
+    fontWeight: "bold",
+    color: "#d8b4fe",
+  },
+
+  /* SEGMENTED CONTROL (unchanged) */
+  segmentContainer: {
+    flexDirection: "row",
+    backgroundColor: "#333",
+    borderRadius: 12,
+    padding: 4,
+  },
+
+  segmentButton: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+
+  segmentActive: {
+    backgroundColor: "#d8b4fe",
+  },
+
+  segmentText: {
+    color: "#aaa",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+
+  segmentTextActive: {
+    color: "#000",
+  },
+
+  /* ITEM/LOCATION CARDS (unchanged) */
+  pill: {
+    backgroundColor: "#362845",
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    marginBottom: 12,
+  },
+
+  pillText: {
+    color: "#d8b4fe",
+    fontSize: 20,
+    fontWeight: "600",
+  },
+
+  emptyState: {
+    marginTop: 40,
+    alignItems: "center",
+  },
+
+  emptyText: {
+    color: "#aaa",
+    fontSize: 18,
+    fontWeight: "500",
   },
 });

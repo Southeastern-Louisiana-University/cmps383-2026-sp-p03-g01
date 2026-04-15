@@ -1,17 +1,16 @@
 {
   "expo": {
     "name": "Caffeinated Lions",
-    "slug": "Selu383-SP26-P03-Mobile-g01",
+    "slug": "caffeinated-lions",
+    "owner": "nasirsw",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-
     "splash": {
       "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#242424"
     },
-
     "scheme": "selu383sp26mobile",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -19,14 +18,14 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.selu383.sp26.p03.g01"
+      "package": "com.nasirsw.caffeinatedlions"
     },
     "edgeToEdgeEnabled": true,
     "predictiveBackGestureEnabled": false,
     "package": "com.selu383.sp26.p03.g01",
     "extra": {
       "eas": {
-        "projectId": "92ca1b04-a687-47f1-a358-cfbcf62d62e7"
+        "projectId": "6cbf07ad-e455-43f5-85c2-cbebd2843879"
       }
     }
   },
@@ -52,12 +51,5 @@
   "experiments": {
     "typedRoutes": true,
     "reactCompiler": true
-  },
-  "extra": {
-    "router": {},
-    "eas": {
-        "projectId": "92ca1b04-a687-47f1-a358-cfbcf62d62e7"
-      }
-    },
-    "owner": "jsoileau2004"
+  }
 }

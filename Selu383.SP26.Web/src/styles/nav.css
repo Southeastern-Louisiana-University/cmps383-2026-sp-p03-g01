@@ -18,6 +18,13 @@
     border-radius: 50%;
 }
 
+.nav {
+  /*This needs to stay where it is when you are scrolled at the top of the screen but then be at the top when you
+  scroll down. This alone does not work and getting this to work will probably mean that I have to rework the navbar
+  AGAIN but whatever. If I can't get it to work then its not that big of a deal.*/
+  position: sticky;
+}
+
 .home {
   display: flex;
   align-items: center;

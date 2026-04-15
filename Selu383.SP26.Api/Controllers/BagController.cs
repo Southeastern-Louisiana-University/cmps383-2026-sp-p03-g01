@@ -1,4 +1,5 @@
 ﻿using Selu383.SP26.Api.Features.Bag;
+using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Selu383.SP26.Api.Data;
@@ -18,10 +19,27 @@ namespace Selu383.SP26.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<Bag>> GetBag()
+        public async Task<ActionResult<BagDto>> GetBag()
         {
             var bag = await _bagsService.GetOrCreateBagAsync();
-            return Ok(bag);
+
+            
+            var items = bag.Items.Select(i => new BagItemDto
+            {
+                ItemId = i.ItemId,
+                Name = i.Item?.Name ?? string.Empty,
+                Price = i.UnitPriceSnapshot,
+                Quantity = i.Quantity
+            }).ToList();
+
+            var dto = new BagDto
+            {
+                Id = bag.Id,
+                Items = items,
+                Subtotal = items.Sum(x => x.LineTotal)
+            };
+
+            return Ok(dto);
         }
 
         [HttpPost("items")]
