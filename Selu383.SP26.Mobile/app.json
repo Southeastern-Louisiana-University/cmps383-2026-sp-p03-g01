@@ -2,7 +2,7 @@
   "expo": {
     "name": "Caffeinated Lions",
     "slug": "caffeinated-lions",
-    "owner": "jsoileau2004",
+    "owner": "nasirsw",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -26,7 +26,7 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "70c7e896-c4df-4733-ac1e-5d1d1167b1bc"
+        "projectId": "6cbf07ad-e455-43f5-85c2-cbebd2843879"
       }
     }
   },

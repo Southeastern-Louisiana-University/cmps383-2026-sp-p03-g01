@@ -7,44 +7,46 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
+// ⭐ ADD THIS
+import { BagProvider } from "@/context/BagContext";
+
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-
-        // ⭐ FIX: Dark tab bar so the bottom is NOT white
-        tabBarStyle: {
-          backgroundColor: "#242424",
-          borderTopColor: "#242424",
-        },
-      }}
-    >
-      {/* HOME TAB */}
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Home",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="house.fill" color={color} />
-          ),
+    // ⭐ WRAP TABS WITH PROVIDER
+    <BagProvider>
+      <Tabs
+        screenOptions={{
+          tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
+          headerShown: false,
+          tabBarButton: HapticTab,
+          tabBarStyle: {
+            backgroundColor: "#242424",
+            borderTopColor: "#242424",
+          },
         }}
-      />
+      >
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: "Home",
+            tabBarIcon: ({ color }) => (
+              <IconSymbol size={28} name="house.fill" color={color} />
+            ),
+          }}
+        />
 
-      {/* BAG TAB — FIXED ICON */}
-      <Tabs.Screen
-        name="bag"
-        options={{
-          title: "Bag",
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="bag-outline" size={26} color={color} />
-          ),
-        }}
-      />
-    </Tabs>
+        <Tabs.Screen
+          name="bag"
+          options={{
+            title: "Bag",
+            tabBarIcon: ({ color }) => (
+              <Ionicons name="bag-outline" size={26} color={color} />
+            ),
+          }}
+        />
+      </Tabs>
+    </BagProvider>
   );
 }

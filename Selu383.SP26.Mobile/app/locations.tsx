@@ -32,7 +32,7 @@ export default function Locations() {
   if (loading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color="#d8b4fe" />
       </View>
     );
   }
@@ -43,8 +43,8 @@ export default function Locations() {
         data={locations}
         keyExtractor={(loc) => loc.id.toString()}
         renderItem={({ item }) => (
-          <View style={styles.pill}>
-            <Text style={styles.pillText}>{item.name}</Text>
+          <View style={styles.row}>
+            <Text style={styles.rowText}>{item.name}</Text>
           </View>
         )}
       />
@@ -58,15 +58,18 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "#000",
   },
-  pill: {
-    backgroundColor: "#d8b4fe",
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderRadius: 12,
+
+  // FLAT, SQUARE ROWS
+  row: {
+    backgroundColor: "#1a1a1a",
+    padding: 16,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#333",
   },
-  pillText: {
-    color: "#000",
+
+  rowText: {
+    color: "#d8b4fe",
     fontSize: 20,
     fontWeight: "600",
   },

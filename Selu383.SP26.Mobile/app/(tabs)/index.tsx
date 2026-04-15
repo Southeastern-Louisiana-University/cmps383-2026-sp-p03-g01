@@ -19,7 +19,6 @@ export default function HomeScreen() {
   const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch both endpoints on load
   useEffect(() => {
     Promise.all([
       fetch("https://selu383-sp26-p03-g01.azurewebsites.net/api/items").then(
@@ -58,18 +57,16 @@ export default function HomeScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.headerRow}>
-        <View style={styles.headerSquircle}>
-          <Image
-            source={require("../../assets/images/icon.png")}
-            style={styles.icon}
-          />
-          <Text style={styles.title}>Caffeinated Lions</Text>
-        </View>
+        {/* ❌ Removed purple pill wrapper */}
+        <Image
+          source={require("../../assets/images/icon.png")}
+          style={styles.icon}
+        />
+        <Text style={styles.title}>Caffeinated Lions</Text>
       </View>
 
-      {/* Segmented Control */}
+      {/* Segmented Control (kept exactly the same) */}
       <View style={styles.segmentContainer}>
-        {/* MENU */}
         <Pressable
           style={[
             styles.segmentButton,
@@ -87,7 +84,6 @@ export default function HomeScreen() {
           </Text>
         </Pressable>
 
-        {/* REWARDS */}
         <Pressable
           style={[
             styles.segmentButton,
@@ -105,7 +101,6 @@ export default function HomeScreen() {
           </Text>
         </Pressable>
 
-        {/* LOCATIONS */}
         <Pressable
           style={[
             styles.segmentButton,
@@ -158,33 +153,25 @@ const styles = StyleSheet.create({
 
   /* HEADER */
   headerRow: {
+    flexDirection: "row",
     alignItems: "center",
+    gap: 12,
     marginBottom: 20,
   },
 
-  headerSquircle: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#2569be", // dark purple
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    gap: 10,
-  },
-
   icon: {
-    width: 32,
-    height: 32,
+    width: 40,
+    height: 40,
     resizeMode: "contain",
   },
 
   title: {
     fontSize: 26,
     fontWeight: "bold",
-    color: "#d8b4fe", // light lavender
+    color: "#d8b4fe",
   },
 
-  /* SEGMENTED CONTROL */
+  /* SEGMENTED CONTROL (unchanged) */
   segmentContainer: {
     flexDirection: "row",
     backgroundColor: "#333",
@@ -213,9 +200,9 @@ const styles = StyleSheet.create({
     color: "#000",
   },
 
-  /* UPDATED PURPLE PILLS */
+  /* ITEM/LOCATION CARDS (unchanged) */
   pill: {
-    backgroundColor: "#2569be", // dark purple
+    backgroundColor: "#362845",
     paddingVertical: 14,
     paddingHorizontal: 20,
     borderRadius: 12,
@@ -223,12 +210,11 @@ const styles = StyleSheet.create({
   },
 
   pillText: {
-    color: "#d8b4fe", // light lavender
+    color: "#d8b4fe",
     fontSize: 20,
     fontWeight: "600",
   },
 
-  /* EMPTY STATE */
   emptyState: {
     marginTop: 40,
     alignItems: "center",
