@@ -1,9 +1,11 @@
 ﻿
-using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using Selu383.SP26.Api.Data;
+using Selu383.SP26.Api.Features.Auth;
 using Selu383.SP26.Api.Features.Bag;
 using Selu383.SP26.Api.Features.Items;
+using Selu383.SP26.Api.Features.Rewards;
+using System.Security.Claims;
 
 namespace Selu383.SP26.Api.Features.Bag;
 
@@ -206,16 +208,52 @@ namespace Selu383.SP26.Api.Features.Bag;
         await _db.SaveChangesAsync();
     }
 
-    public async Task CheckoutAsync()
+    public async Task CheckoutAsync(int pointsToUse = 0)
     {
         var bag = await GetOrCreateBagAsync();
-        if (bag.Items == null || !bag.Items.Any())
+
+        if (!bag.Items.Any())
             throw new InvalidOperationException("Cannot checkout an empty bag");
 
-        
+        var userId = _http.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        User? user = null;
+
+        if (userId != null)
+        {
+            user = await _db.Set<User>().FindAsync(int.Parse(userId));
+        }
+
+        var rewardService = new RewardService();
+
+        var subtotal = bag.Subtotal;
+
+        decimal discount = 0;
+        int pointsUsed = 0;
+
+        if (user != null && pointsToUse > 0)
+        {
+            discount = rewardService.CalculateDiscount(pointsToUse, subtotal);
+            pointsUsed = rewardService.CalculatePointsFromDiscount(discount);
+
+            if (pointsUsed > user.RewardPoints)
+                throw new InvalidOperationException("Not enough points");
+
+            user.RewardPoints -= pointsUsed;
+        }
+
+        var finalTotal = subtotal - discount;
+
+        if (user != null)
+        {
+            var earnedPoints = rewardService.CalculatePointsEarned(finalTotal);
+            user.RewardPoints += earnedPoints;
+        }
+
         bag.Status = BagStatus.CheckedOut;
         bag.UpdateAt = DateTime.UtcNow;
+
         await _db.SaveChangesAsync();
     }
-    
+
 }
