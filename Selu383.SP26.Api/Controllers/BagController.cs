@@ -90,6 +90,7 @@ namespace Selu383.SP26.Api.Controllers
                 {
                     message = "Checkout successful"
                 });
+
             }
             catch (InvalidOperationException ex) { return BadRequest(ex.Message); }
         }

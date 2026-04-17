@@ -170,11 +170,15 @@ namespace Selu383.SP26.Api.Features.Bag;
         else
         {
             var item = await _db.Set<Item>().FindAsync(itemId);
+
+            if (item == null)
+                throw new ArgumentException("Item not found");
+
             bag.Items.Add(new BagItem
             {
                 ItemId = itemId,
                 Quantity = quantity,
-                UnitPriceSnapshot = item != null ? item.Price : 0m 
+                UnitPriceSnapshot = item.Price
             });
         }
         await _db.SaveChangesAsync();
@@ -223,32 +227,38 @@ namespace Selu383.SP26.Api.Features.Bag;
         {
             user = await _db.Set<User>().FindAsync(int.Parse(userId));
         }
-
-        var rewardService = new RewardService();
+        if (user == null)
+            throw new InvalidOperationException("User must be logged in to earn points");
 
         var subtotal = bag.Subtotal;
+
+        Console.WriteLine($"Subtotal: {subtotal}");
 
         decimal discount = 0;
         int pointsUsed = 0;
 
-        if (user != null && pointsToUse > 0)
+        if (pointsToUse > 0)
         {
-            discount = rewardService.CalculateDiscount(pointsToUse, subtotal);
-            pointsUsed = rewardService.CalculatePointsFromDiscount(discount);
-
-            if (pointsUsed > user.RewardPoints)
+            if (pointsToUse > user.RewardPoints)
                 throw new InvalidOperationException("Not enough points");
+
+            // 100 points = $1
+            discount = pointsToUse / 100m;
+
+            pointsUsed = pointsToUse;
 
             user.RewardPoints -= pointsUsed;
         }
 
         var finalTotal = subtotal - discount;
 
-        if (user != null)
-        {
-            var earnedPoints = rewardService.CalculatePointsEarned(finalTotal);
-            user.RewardPoints += earnedPoints;
-        }
+        Console.WriteLine($"FinalTotal: {finalTotal}");
+
+        var earnedPoints = (int)Math.Round(finalTotal * 100);
+
+        Console.WriteLine($"EarnedPoints: {earnedPoints}");
+
+        user.RewardPoints += earnedPoints;
 
         bag.Status = BagStatus.CheckedOut;
         bag.UpdateAt = DateTime.UtcNow;

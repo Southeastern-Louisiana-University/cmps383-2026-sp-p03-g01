@@ -4,20 +4,23 @@
     {
         private const int PointsPerDollar = 100;
         private const decimal DollarsPerPoint = 0.01m;
-        public int CalculatePointsEarned(decimal subtotal)
+        public int CalculatePointsEarned(decimal total)
         {
-            return (int)(subtotal * PointsPerDollar);
+            return (int)Math.Floor(total * 100);
         }
 
         public decimal CalculateDiscount(int pointsToUse, decimal subtotal)
         {
-            var value = pointsToUse * DollarsPerPoint;
-            return value;
+            var maxDiscount = subtotal * 0.10m;
+
+            var requestedDiscount = pointsToUse * DollarsPerPoint;
+
+            return Math.Min(requestedDiscount, maxDiscount);
         }
 
         public int CalculatePointsFromDiscount(decimal discount)
         {
-            return (int)(discount / DollarsPerPoint);
+            return (int)Math.Floor(discount / DollarsPerPoint);
         }
     }
 }
