@@ -22,11 +22,6 @@ type BagDto = {
   subtotal: number;
 };
 
-type Location = {
-  id: number;
-  name: string;
-};
-
 type BagContextType = {
   bag: BagDto | null;
   loading: boolean;
@@ -36,8 +31,6 @@ type BagContextType = {
   clear: () => Promise<void>;
   doCheckout: () => Promise<void>;
   refresh: () => Promise<void>;
-  selectedLocation: Location | null;
-  setLocation: (loc: Location) => void;
 };
 
 const BagContext = createContext<BagContextType | null>(null);
@@ -45,13 +38,6 @@ const BagContext = createContext<BagContextType | null>(null);
 export function BagProvider({ children }: { children: ReactNode }) {
   const [bag, setBag] = useState<BagDto | null>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedLocation, setSelectedLocation] = useState<Location | null>(
-    null,
-  );
-
-  function setLocation(loc: Location) {
-    setSelectedLocation(loc);
-  }
 
   async function refresh() {
     try {
@@ -78,10 +64,8 @@ export function BagProvider({ children }: { children: ReactNode }) {
       setBag(normalized);
     } catch (error) {
       console.error("Bag Context Refresh Error:", error);
-      // Ensure state isn't null so UI doesn't crash
       setBag({ id: 0, items: [], subtotal: 0 });
     } finally {
-      // This is the specific block you needed to stop the infinite loading
       setLoading(false);
     }
   }
@@ -131,8 +115,6 @@ export function BagProvider({ children }: { children: ReactNode }) {
         clear,
         doCheckout,
         refresh,
-        selectedLocation,
-        setLocation,
       }}
     >
       {children}

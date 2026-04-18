@@ -79,7 +79,7 @@ export default function BagTab() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#333333", // Grey background to match app
+    backgroundColor: "#333333",
   },
   centered: {
     flex: 1,
@@ -93,13 +93,13 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   itemRow: {
-    backgroundColor: "#362845", // Deep purple card color
+    backgroundColor: "#362845",
     padding: 16,
     marginBottom: 12,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    borderRadius: 8, // Added a slight round for a cleaner card look
+    borderRadius: 8,
     borderWidth: 1,
     borderColor: "#4a3b5c",
   },
@@ -107,12 +107,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   itemName: {
-    color: "#d8b4fe", // Lavender text on card
+    color: "#d8b4fe",
     fontSize: 18,
     fontWeight: "700",
   },
   itemPrice: {
-    color: "#d8b4fe", // Lavender text on card
+    color: "#d8b4fe",
     fontSize: 16,
     opacity: 0.9,
   },
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   removeButtonText: {
-    color: "#362845", // Dark text on light button
+    color: "#362845",
     fontWeight: "700",
   },
   footer: {

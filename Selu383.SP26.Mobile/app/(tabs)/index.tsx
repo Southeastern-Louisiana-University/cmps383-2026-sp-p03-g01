@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   FlatList,
   Image,
   Pressable,
@@ -77,22 +76,7 @@ export default function HomeScreen() {
       return (
         <View style={styles.pill}>
           <Text style={styles.pillText}>{item.name}</Text>
-          <Pressable
-            style={({ pressed }) => [
-              styles.addButton,
-              { opacity: pressed ? 0.7 : 1 },
-            ]}
-            onPress={() => {
-              try {
-                bag.setLocation({ id: item.id, name: item.name });
-                Alert.alert("Location set", `${item.name} is now your store.`);
-              } catch (e) {
-                console.log("Location error:", e);
-              }
-            }}
-          >
-            <Text style={styles.addButtonText}>Make this my location</Text>
-          </Pressable>
+          <Text style={styles.descriptionText}>Visit us at this location!</Text>
         </View>
       );
     }
@@ -112,7 +96,6 @@ export default function HomeScreen() {
           onPress={async () => {
             try {
               await bag.add(item.id);
-              Alert.alert("Added", `${item.name} added to bag!`);
             } catch (e) {
               console.log("Bag error:", e);
             }
