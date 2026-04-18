@@ -96,8 +96,8 @@ public static class SeedHelper
         }
         dataContext.Set<Item>().AddRange(
             // Drinks
-            new Item { Name = "Iced Latte", Price = 5.50m, Description = "Espresso and milk served over ice for a refreshing coffee drink.", Nutrition = "", Extras = new List<ExtraOption>() },
-            new Item { Name = "Supernova", Price = 7.95m, Description = "A unique coffee blend with a complex, balanced profile and subtle sweetness. Delicious as espresso or paired with milk.", Nutrition = "", Extras = new List<ExtraOption>() },
+            new Item { Name = "Iced Latte", Price = 5.50m, Description = "Espresso and milk served over ice for a refreshing coffee drink.", Nutrition = "", Extras = new List<ExtraOption>(), ImageUrl = "https://i.imgur.com/9j2FMdx.png" },
+            new Item { Name = "Supernova", Price = 7.95m, Description = "A unique coffee blend with a complex, balanced profile and subtle sweetness. Delicious as espresso or paired with milk.", Nutrition = "", Extras = new List<ExtraOption>(), ImageUrl = "https://i.imgur.com/sMMzmWG.png" },
             new Item { Name = "Roaring Frappe", Price = 6.20m, Description = "Cold brew, milk, and ice blended together with a signature syrup or flavor, topped with whipped cream.", Nutrition = "", Extras = new List<ExtraOption>() },
             new Item { Name = "Black & White Cold Brew", Price = 5.15m, Description = "Cold brew made with both dark and light roast beans, finished with a drizzle of condensed milk.", Nutrition = "", Extras = new List<ExtraOption>() },
             new Item { Name = "Strawberry Limeade", Price = 5.00m, Description = "Fresh lime juice blended with strawberry purée for a refreshing, tangy drink.", Nutrition = "", Extras = new List<ExtraOption>() },

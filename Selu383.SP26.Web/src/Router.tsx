@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router";
 
 import { NavBar } from "@/components/NavBar";
 import { AuthProvider } from "@/context/UserLoggedInContext";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 import Home from "@/pages/Home";
 import Menu from "@/pages/Menu";
@@ -11,6 +12,7 @@ import Bag from "@/pages/Bag";
 import Account from "@/pages/Account";
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
+import Admin from "@/pages/Admin";
 
 import { LocationDetailPage } from "@/pages/LocationDetailPage";
 
@@ -27,6 +29,11 @@ export function Router() {
           <Route path="login" element={<Login />} />
           <Route path="signup" element={<Signup />} />
           <Route path="account" element={<Account />} />
+          <Route path="admin" element={
+            <ProtectedRoute requiredRoles={["Admin"]}>
+              <Admin />
+            </ProtectedRoute>
+          } />
 
           <Route path="locations/:locationId" element={<LocationDetailPage />} />
 

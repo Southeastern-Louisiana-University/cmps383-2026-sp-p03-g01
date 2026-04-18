@@ -16,6 +16,27 @@ a{
   border-radius: 10px;
   padding: 20px;
   margin: 20px;
+
+}
+
+.menu-card{
+  width: min(100%, 760px);
+  min-height: 220px;
+  box-sizing: border-box;
+}
+
+.menu-card table{
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.menu-card td{
+  padding: 0;
+  vertical-align: top;
+}
+
+.menu-card td + td{
+  padding-left: 16px;
 }
 
 .card button{
@@ -25,4 +46,22 @@ a{
   border-radius: 5px;
   padding: 5px;
   cursor: pointer;
+}
+
+.menu-card h2{
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+.menu-card p{
+  margin: 6px 0;
+}
+
+.menu-card .menuItem{
+  border-radius: 20px;
+  width: 140px;
+  min-width: 140px;
+  height: 140px;
+  object-fit: cover;
+  display: block;
 }

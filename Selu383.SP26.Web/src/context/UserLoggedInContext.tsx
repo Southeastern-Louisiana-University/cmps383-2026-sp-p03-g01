@@ -6,6 +6,7 @@ interface AuthContextType {
   user: UserDto | null;
   isLoading: boolean;
   login: (userName: string, password: string) => Promise<void>;
+  signup: (userName: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   isLoggedIn: boolean;
 }
@@ -54,6 +55,49 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(userData);
   };
 
+  const signup = async (userName: string, password: string) => {
+    const response = await fetch("/api/users", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userName, password }),
+    });
+
+    console.log("Signup response status:", response.status);
+    console.log("Signup response headers:", {
+      contentType: response.headers.get("content-type"),
+      contentLength: response.headers.get("content-length"),
+    });
+
+    if (response.status === 400) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error((errorData as { message?: string }).message || "Invalid username or password. Username may already be taken.");
+    }
+
+    if (!response.ok) {
+      let errorMessage = "";
+      const contentType = response.headers.get("content-type");
+      console.log("Response not OK, attempting to parse error...");
+      try {
+        const responseBody = await response.clone().text();
+        console.log("Raw response body:", responseBody);
+        
+        if (contentType?.includes("application/json")) {
+          const errorData = JSON.parse(responseBody);
+          console.error("Signup error response JSON:", errorData);
+          errorMessage = (errorData as { message?: string }).message || JSON.stringify(errorData);
+        } else {
+          errorMessage = responseBody;
+        }
+      } catch (parseError) {
+        console.error("Error parsing response:", parseError);
+      }
+      throw new Error(`Signup failed (${response.status}): ${errorMessage || "An unexpected error occurred during signup."}`);
+    }
+
+    const userData = await response.json() as UserDto;
+    setUser(userData);
+  };
+
   const logout = async () => {
     try {
       await fetch("/api/authentication/logout", { method: "POST" });
@@ -66,6 +110,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     user,
     isLoading,
     login,
+    signup,
     logout,
     isLoggedIn: user !== null,
   };
