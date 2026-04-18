@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import {
   createContext,
   ReactNode,
@@ -8,7 +9,7 @@ import {
 import { addItem, checkout, getBag, removeItem, updateItem } from "../api/bag";
 
 type BagItemDto = {
-  itemId: number;
+  id: number;
   name: string;
   price: number;
   quantity: number;
@@ -21,13 +22,22 @@ type BagDto = {
   subtotal: number;
 };
 
+type Location = {
+  id: number;
+  name: string;
+};
+
 type BagContextType = {
   bag: BagDto | null;
   loading: boolean;
   add: (itemId: number, qty?: number) => Promise<void>;
   update: (itemId: number, qty: number) => Promise<void>;
   remove: (itemId: number) => Promise<void>;
+  clear: () => Promise<void>;
   doCheckout: () => Promise<void>;
+  refresh: () => Promise<void>;
+  selectedLocation: Location | null;
+  setLocation: (loc: Location) => void;
 };
 
 const BagContext = createContext<BagContextType | null>(null);
@@ -35,12 +45,45 @@ const BagContext = createContext<BagContextType | null>(null);
 export function BagProvider({ children }: { children: ReactNode }) {
   const [bag, setBag] = useState<BagDto | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedLocation, setSelectedLocation] = useState<Location | null>(
+    null,
+  );
+
+  function setLocation(loc: Location) {
+    setSelectedLocation(loc);
+  }
 
   async function refresh() {
-    setLoading(true);
-    const data = await getBag();
-    setBag(data);
-    setLoading(false);
+    try {
+      setLoading(true);
+      const data = await getBag();
+
+      if (!data) {
+        setBag({ id: 0, items: [], subtotal: 0 });
+        return;
+      }
+
+      const normalized: BagDto = {
+        id: data.id ?? data.Id ?? 0,
+        subtotal: data.subtotal ?? data.Subtotal ?? 0,
+        items: (data.items ?? data.Items ?? []).map((i: any) => ({
+          id: i.id ?? i.Id ?? i.itemId ?? i.ItemId,
+          name: i.name ?? i.Name ?? "Unknown",
+          price: i.price ?? i.Price ?? 0,
+          quantity: i.quantity ?? i.Quantity ?? 1,
+          lineTotal: i.lineTotal ?? i.LineTotal ?? 0,
+        })),
+      };
+
+      setBag(normalized);
+    } catch (error) {
+      console.error("Bag Context Refresh Error:", error);
+      // Ensure state isn't null so UI doesn't crash
+      setBag({ id: 0, items: [], subtotal: 0 });
+    } finally {
+      // This is the specific block you needed to stop the infinite loading
+      setLoading(false);
+    }
   }
 
   async function add(itemId: number, qty: number = 1) {
@@ -58,9 +101,19 @@ export function BagProvider({ children }: { children: ReactNode }) {
     await refresh();
   }
 
+  async function clear() {
+    if (bag?.items) {
+      for (const item of bag.items) {
+        await removeItem(item.id);
+      }
+    }
+    await refresh();
+  }
+
   async function doCheckout() {
     await checkout();
     await refresh();
+    router.push("/checkoutcomplete");
   }
 
   useEffect(() => {
@@ -69,7 +122,18 @@ export function BagProvider({ children }: { children: ReactNode }) {
 
   return (
     <BagContext.Provider
-      value={{ bag, loading, add, update, remove, doCheckout }}
+      value={{
+        bag,
+        loading,
+        add,
+        update,
+        remove,
+        clear,
+        doCheckout,
+        refresh,
+        selectedLocation,
+        setLocation,
+      }}
     >
       {children}
     </BagContext.Provider>

@@ -37,9 +37,18 @@ export default function Items() {
             ? data.items
             : [];
 
-        setItems(list);
+        const formattedList = list.map((item: any) => ({
+          id: item.id ?? item.Id,
+          name: item.name ?? item.Name ?? "Unknown Item",
+          description: item.description ?? item.Description ?? "",
+          price: item.price ?? item.Price ?? 0,
+          nutrition: item.nutrition ?? item.Nutrition ?? "N/A",
+        }));
+
+        setItems(formattedList);
       } catch (err) {
-        setItems([]); // no fallback
+        console.error("Fetch error:", err);
+        setItems([]);
       }
 
       setLoading(false);
@@ -65,7 +74,11 @@ export default function Items() {
         renderItem={({ item }) => (
           <View style={styles.itemRow}>
             <Text style={styles.itemName}>{item.name}</Text>
-            <Text style={styles.itemPrice}>${item.price.toFixed(2)}</Text>
+
+            <Text style={styles.itemPrice}>
+              ${typeof item.price === "number" ? item.price.toFixed(2) : "0.00"}
+            </Text>
+
             <Text style={styles.itemDescription}>{item.description}</Text>
             <Text style={styles.itemNutrition}>{item.nutrition}</Text>
 
@@ -105,7 +118,6 @@ const styles = StyleSheet.create({
   listContent: {
     padding: 20,
   },
-
   itemRow: {
     backgroundColor: "#1a1a1a",
     padding: 16,
@@ -113,7 +125,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#333",
   },
-
   itemName: {
     color: "#d8b4fe",
     fontSize: 20,
@@ -138,8 +149,9 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 
+  // UPDATED BUTTON COLORS
   addButton: {
-    backgroundColor: "#fff",
+    backgroundColor: "#d8b4fe", // lavender button
     paddingVertical: 8,
     paddingHorizontal: 16,
     marginTop: 12,
@@ -147,7 +159,7 @@ const styles = StyleSheet.create({
     borderColor: "#000",
   },
   addButtonText: {
-    color: "#000",
+    color: "#362845", // deep purple text
     fontWeight: "700",
   },
 });
