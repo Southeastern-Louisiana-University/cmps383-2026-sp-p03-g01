@@ -16,6 +16,7 @@ type Item = {
   description: string;
   price: number;
   nutrition: string;
+  imageUrl: string; // ✅ Added field
 };
 
 type Location = { id: number; name: string };
@@ -42,17 +43,20 @@ export default function HomeScreen() {
       const rawItems = Array.isArray(itemsData)
         ? itemsData
         : itemsData?.items || [];
+
       const formattedItems = rawItems.map((item: any) => ({
         id: item.id ?? item.Id,
         name: item.name ?? item.Name ?? "Unknown Item",
         description: item.description ?? item.Description ?? "",
         price: item.price ?? item.Price ?? 0,
         nutrition: item.nutrition ?? item.Nutrition ?? "",
+        imageUrl: item.imageUrl ?? item.ImageUrl ?? "", // ✅ Map imageUrl from Swagger
       }));
 
       const rawLocations = Array.isArray(locationsData)
         ? locationsData
         : locationsData?.locations || [];
+
       const formattedLocations = rawLocations.map((loc: any) => ({
         id: loc.id ?? loc.Id,
         name: loc.name ?? loc.Name ?? "Unknown Location",
@@ -83,6 +87,19 @@ export default function HomeScreen() {
 
     return (
       <View style={styles.pill}>
+        {/* ✅ Render seeded image if available */}
+        {item.imageUrl ? (
+          <Image
+            source={{ uri: item.imageUrl }}
+            style={styles.itemImage}
+            resizeMode="cover"
+          />
+        ) : (
+          <View style={[styles.itemImage, styles.placeholderImage]}>
+            <Text style={{ color: "#aaa" }}>No Image Available</Text>
+          </View>
+        )}
+
         <Text style={styles.pillText}>{item.name}</Text>
         <Text style={styles.priceText}>
           ${typeof item.price === "number" ? item.price.toFixed(2) : "0.00"}
@@ -203,6 +220,20 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 12,
     marginBottom: 12,
+  },
+  itemImage: {
+    width: "100%",
+    height: 180,
+    borderRadius: 8,
+    marginBottom: 12,
+    backgroundColor: "#2a1f35",
+  },
+  placeholderImage: {
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#4a3b5c",
+    borderStyle: "dashed",
   },
   pillText: { color: "#d8b4fe", fontSize: 20, fontWeight: "600" },
   priceText: { color: "#fff", fontSize: 16, fontWeight: "bold", marginTop: 4 },
