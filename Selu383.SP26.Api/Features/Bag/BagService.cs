@@ -232,34 +232,38 @@ namespace Selu383.SP26.Api.Features.Bag;
 
         var subtotal = bag.Subtotal;
 
-        Console.WriteLine($"Subtotal: {subtotal}");
+        // Calculate max discount (10% of subtotal)
+        decimal maxDiscount = subtotal * 0.10m;
 
-        decimal discount = 0;
-        int pointsUsed = 0;
+        // Convert that discount to points (100 points = $1)
+        int maxPointsForDiscount = (int)Math.Floor(maxDiscount * 100);  // Max points a user can use
 
-        if (pointsToUse > 0)
+        // Ensure the points used doesn't exceed the max allowed (rounded down to the nearest whole number)
+        if (pointsToUse > maxPointsForDiscount)
         {
-            if (pointsToUse > user.RewardPoints)
-                throw new InvalidOperationException("Not enough points");
-
-            // 100 points = $1
-            discount = pointsToUse / 100m;
-
-            pointsUsed = pointsToUse;
-
-            user.RewardPoints -= pointsUsed;
+            throw new InvalidOperationException(
+            $"For this purchase, you cannot use more than {maxPointsForDiscount} points (10% maximum discount).");
         }
 
-        var finalTotal = subtotal - discount;
+        // Now apply the discount
+        decimal discount = pointsToUse / 100m;
 
-        Console.WriteLine($"FinalTotal: {finalTotal}");
+        decimal finalTotal = subtotal - discount;
 
-        var earnedPoints = (int)Math.Round(finalTotal * 100);
+        // Deduct points from user
+        if (pointsToUse > 0)
+        {
+            user.RewardPoints -= pointsToUse;
+        }
 
-        Console.WriteLine($"EarnedPoints: {earnedPoints}");
+        // Calculate earned points (based on final total before taxes, if applicable)
+        decimal amountSpentWithoutTax = finalTotal; // Adjust if tax needs to be excluded
+        var earnedPoints = (int)Math.Round(amountSpentWithoutTax * 100);
 
+        // Add earned points to user's account
         user.RewardPoints += earnedPoints;
 
+        // Update bag status to checked out
         bag.Status = BagStatus.CheckedOut;
         bag.UpdateAt = DateTime.UtcNow;
 
