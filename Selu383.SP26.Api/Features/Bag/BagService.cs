@@ -232,38 +232,30 @@ namespace Selu383.SP26.Api.Features.Bag;
 
         var subtotal = bag.Subtotal;
 
-        // Calculate max discount (10% of subtotal)
         decimal maxDiscount = subtotal * 0.10m;
 
-        // Convert that discount to points (100 points = $1)
-        int maxPointsForDiscount = (int)Math.Floor(maxDiscount * 100);  // Max points a user can use
+        int maxPointsForDiscount = (int)Math.Floor(maxDiscount * 100);  
 
-        // Ensure the points used doesn't exceed the max allowed (rounded down to the nearest whole number)
         if (pointsToUse > maxPointsForDiscount)
         {
             throw new InvalidOperationException(
             $"For this purchase, you cannot use more than {maxPointsForDiscount} points (10% maximum discount).");
         }
 
-        // Now apply the discount
         decimal discount = pointsToUse / 100m;
 
         decimal finalTotal = subtotal - discount;
 
-        // Deduct points from user
         if (pointsToUse > 0)
         {
             user.RewardPoints -= pointsToUse;
         }
 
-        // Calculate earned points (based on final total before taxes, if applicable)
-        decimal amountSpentWithoutTax = finalTotal; // Adjust if tax needs to be excluded
+        decimal amountSpentWithoutTax = finalTotal;
         var earnedPoints = (int)Math.Round(amountSpentWithoutTax * 100);
 
-        // Add earned points to user's account
         user.RewardPoints += earnedPoints;
 
-        // Update bag status to checked out
         bag.Status = BagStatus.CheckedOut;
         bag.UpdateAt = DateTime.UtcNow;
 
