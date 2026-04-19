@@ -230,16 +230,29 @@ namespace Selu383.SP26.Api.Features.Bag;
         if (user == null)
             throw new InvalidOperationException("User must be logged in to earn points");
 
+        if (pointsToUse > user.RewardPoints)
+        {
+            throw new InvalidOperationException(
+                $"You only have {user.RewardPoints} points, so you cannot use {pointsToUse} points.");
+        }
+
         var subtotal = bag.Subtotal;
 
         decimal maxDiscount = subtotal * 0.10m;
 
-        int maxPointsForDiscount = (int)Math.Floor(maxDiscount * 100);  
+        int maxPointsForDiscount = (int)Math.Floor(maxDiscount * 100);
 
         if (pointsToUse > maxPointsForDiscount)
         {
             throw new InvalidOperationException(
             $"For this purchase, you cannot use more than {maxPointsForDiscount} points (10% maximum discount).");
+        }
+
+
+        if (pointsToUse < 0)
+        {
+            throw new InvalidOperationException(
+            $"Points cannot be negative.");
         }
 
         decimal discount = pointsToUse / 100m;
