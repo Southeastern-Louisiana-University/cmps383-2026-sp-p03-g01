@@ -81,12 +81,16 @@ namespace Selu383.SP26.Api.Controllers
         }
 
         [HttpPost("checkout")]
-        public async Task<IActionResult> Checkout()
+        public async Task<IActionResult> Checkout([FromBody] CheckoutDto dto)
         {
             try
             {
-                await _bagsService.CheckoutAsync();
-                return NoContent();
+                await _bagsService.CheckoutAsync(dto.PointsToUse);
+                return Ok(new
+                {
+                    message = "Checkout successful"
+                });
+
             }
             catch (InvalidOperationException ex) { return BadRequest(ex.Message); }
         }

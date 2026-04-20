@@ -17,6 +17,9 @@ public class ItemConfiguration : IEntityTypeConfiguration<Item>
 
         builder.Property(x => x.Nutrition)
             .HasMaxLength(300);
+        
+        builder.Property(x => x.Category)
+            .HasMaxLength(120);
 
         builder.HasMany(x => x.Extras)
            .WithOne(x => x.Item)

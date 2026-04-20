@@ -1,9 +1,11 @@
 ﻿
-using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using Selu383.SP26.Api.Data;
+using Selu383.SP26.Api.Features.Auth;
 using Selu383.SP26.Api.Features.Bag;
 using Selu383.SP26.Api.Features.Items;
+using Selu383.SP26.Api.Features.Rewards;
+using System.Security.Claims;
 
 namespace Selu383.SP26.Api.Features.Bag;
 
@@ -168,11 +170,15 @@ namespace Selu383.SP26.Api.Features.Bag;
         else
         {
             var item = await _db.Set<Item>().FindAsync(itemId);
+
+            if (item == null)
+                throw new ArgumentException("Item not found");
+
             bag.Items.Add(new BagItem
             {
                 ItemId = itemId,
                 Quantity = quantity,
-                UnitPriceSnapshot = item != null ? item.Price : 0m 
+                UnitPriceSnapshot = item.Price
             });
         }
         await _db.SaveChangesAsync();
@@ -206,16 +212,67 @@ namespace Selu383.SP26.Api.Features.Bag;
         await _db.SaveChangesAsync();
     }
 
-    public async Task CheckoutAsync()
+    public async Task CheckoutAsync(int pointsToUse = 0)
     {
         var bag = await GetOrCreateBagAsync();
-        if (bag.Items == null || !bag.Items.Any())
+
+        if (!bag.Items.Any())
             throw new InvalidOperationException("Cannot checkout an empty bag");
 
-        
+        var userId = _http.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        User? user = null;
+
+        if (userId != null)
+        {
+            user = await _db.Set<User>().FindAsync(int.Parse(userId));
+        }
+        if (user == null)
+            throw new InvalidOperationException("User must be logged in to earn points");
+
+        if (pointsToUse > user.RewardPoints)
+        {
+            throw new InvalidOperationException(
+                $"You only have {user.RewardPoints} points, so you cannot use {pointsToUse} points.");
+        }
+
+        var subtotal = bag.Subtotal;
+
+        decimal maxDiscount = subtotal * 0.10m;
+
+        int maxPointsForDiscount = (int)Math.Floor(maxDiscount * 100);
+
+        if (pointsToUse > maxPointsForDiscount)
+        {
+            throw new InvalidOperationException(
+            $"For this purchase, you cannot use more than {maxPointsForDiscount} points (10% maximum discount).");
+        }
+
+
+        if (pointsToUse < 0)
+        {
+            throw new InvalidOperationException(
+            $"Points cannot be negative.");
+        }
+
+        decimal discount = pointsToUse / 100m;
+
+        decimal finalTotal = subtotal - discount;
+
+        if (pointsToUse > 0)
+        {
+            user.RewardPoints -= pointsToUse;
+        }
+
+        decimal amountSpentWithoutTax = finalTotal;
+        var earnedPoints = (int)Math.Round(amountSpentWithoutTax * 100);
+
+        user.RewardPoints += earnedPoints;
+
         bag.Status = BagStatus.CheckedOut;
         bag.UpdateAt = DateTime.UtcNow;
+
         await _db.SaveChangesAsync();
     }
-    
+
 }
