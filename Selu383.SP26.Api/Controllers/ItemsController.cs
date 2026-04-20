@@ -22,6 +22,7 @@ public class ItemsController(DataContext dataContext) : ControllerBase
                 Description = x.Description,
                 Nutrition = x.Nutrition,
                 ImageUrl = x.ImageUrl,
+                Category = x.Category,
                 Extras = x.Extras
                     .Select(e => new ExtraOptionDto
                     {
@@ -52,6 +53,7 @@ public class ItemsController(DataContext dataContext) : ControllerBase
             Description = result.Description,
             Nutrition = result.Nutrition,
             ImageUrl = result.ImageUrl,
+            Category = result.Category,
             Extras = result.Extras
                 .Select(e => new ExtraOptionDto
                 {
@@ -77,6 +79,7 @@ public class ItemsController(DataContext dataContext) : ControllerBase
             Description = dto.Description,
             Nutrition = dto.Nutrition,
             ImageUrl = dto.ImageUrl,
+            Category = dto.Category,
             Extras = dto.Extras
             .Select(e => new ExtraOption
             {
@@ -115,6 +118,7 @@ public class ItemsController(DataContext dataContext) : ControllerBase
         item.Price = dto.Price;
         item.Description = dto.Description;
         item.Nutrition = dto.Nutrition;
+        item.Category = dto.Category;
         item.ImageUrl = dto.ImageUrl;
 
         item.Extras = dto.Extras
