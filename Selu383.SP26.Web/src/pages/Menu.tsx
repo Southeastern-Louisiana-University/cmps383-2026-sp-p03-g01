@@ -53,7 +53,7 @@ function Menu(){
         <ul>
           {items.map((item) => (
             <li className="card menu-card" key={item.id}>
-                <table>
+                <table style={{ alignItems: "flex-start" }}>
                     <tr>
                         <td><img className="menuItem" src={item.imageUrl} alt={item.name} /></td>
                         <td>
