@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -8,6 +8,8 @@ import {
   Text,
   View,
 } from "react-native";
+import { router } from "expo-router";
+import { AuthContext } from "@/context/AuthContext";
 
 type Item = { id: number; name: string };
 type Location = { id: number; name: string };
@@ -19,13 +21,15 @@ export default function HomeScreen() {
   const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const { user } = useContext(AuthContext);
+
   useEffect(() => {
     Promise.all([
       fetch("https://selu383-sp26-p03-g01.azurewebsites.net/api/items").then(
-        (r) => r.json(),
+        (r) => r.json()
       ),
       fetch(
-        "https://selu383-sp26-p03-g01.azurewebsites.net/api/locations",
+        "https://selu383-sp26-p03-g01.azurewebsites.net/api/locations"
       ).then((r) => r.json()),
     ])
       .then(([itemsData, locationsData]) => {
@@ -57,15 +61,27 @@ export default function HomeScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.headerRow}>
-        {/* ❌ Removed purple pill wrapper */}
         <Image
           source={require("../../assets/images/icon.png")}
           style={styles.icon}
         />
         <Text style={styles.title}>Caffeinated Lions</Text>
+
+        {/* Always show button — text changes based on login state */}
+        <Pressable
+          style={styles.loginButton}
+          onPress={() => {
+            if (!user) router.push("/login");
+            else router.push("/logout");
+          }}
+        >
+          <Text style={styles.loginButtonText}>
+            {user ? user.username.substring(0, 5) : "Login"}
+          </Text>
+        </Pressable>
       </View>
 
-      {/* Segmented Control (kept exactly the same) */}
+      {/* Segmented Control */}
       <View style={styles.segmentContainer}>
         <Pressable
           style={[
@@ -151,7 +167,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#242424",
   },
 
-  /* HEADER */
   headerRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -171,7 +186,6 @@ const styles = StyleSheet.create({
     color: "#d8b4fe",
   },
 
-  /* SEGMENTED CONTROL (unchanged) */
   segmentContainer: {
     flexDirection: "row",
     backgroundColor: "#333",
@@ -200,7 +214,6 @@ const styles = StyleSheet.create({
     color: "#000",
   },
 
-  /* ITEM/LOCATION CARDS (unchanged) */
   pill: {
     backgroundColor: "#362845",
     paddingVertical: 14,
@@ -224,5 +237,19 @@ const styles = StyleSheet.create({
     color: "#aaa",
     fontSize: 18,
     fontWeight: "500",
+  },
+
+  loginButton: {
+    marginLeft: "auto",
+    backgroundColor: "#d8b4fe",
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+  },
+
+  loginButtonText: {
+    color: "black",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });

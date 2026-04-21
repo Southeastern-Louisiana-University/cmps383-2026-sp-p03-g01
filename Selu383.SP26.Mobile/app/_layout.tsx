@@ -1,9 +1,12 @@
 import { BagProvider } from "@/context/BagContext";
+import { AuthProvider } from "@/context/AuthContext";
+
 import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
+
 import { Stack } from "expo-router";
 import { useColorScheme } from "react-native";
 
@@ -33,12 +36,14 @@ export default function RootLayout() {
   };
 
   return (
-    <BagProvider>
-      <ThemeProvider
-        value={colorScheme === "dark" ? MyDarkTheme : MyLightTheme}
-      >
-        <Stack screenOptions={{ headerShown: false }} />
-      </ThemeProvider>
-    </BagProvider>
+    <AuthProvider>
+      <BagProvider>
+        <ThemeProvider
+          value={colorScheme === "dark" ? MyDarkTheme : MyLightTheme}
+        >
+          <Stack screenOptions={{ headerShown: false }} />
+        </ThemeProvider>
+      </BagProvider>
+    </AuthProvider>
   );
 }
