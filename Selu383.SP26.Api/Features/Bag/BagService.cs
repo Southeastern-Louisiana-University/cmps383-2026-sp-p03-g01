@@ -159,6 +159,7 @@ public class BagService : IBagService
         }
     }
 
+
     public async Task AddItemAsync(int itemId, int quantity)
     {
         var bag = await GetOrCreateBagAsync();
