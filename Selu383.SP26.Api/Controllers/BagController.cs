@@ -19,11 +19,10 @@ namespace Selu383.SP26.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<BagDto>> GetBag()
+        public async Task<ActionResult<BagDto>> GetBag([FromQuery] int pointsToUse = 0)
         {
             var bag = await _bagsService.GetOrCreateBagAsync();
 
-            
             var items = bag.Items.Select(i => new BagItemDto
             {
                 ItemId = i.ItemId,
@@ -32,11 +31,27 @@ namespace Selu383.SP26.Api.Controllers
                 Quantity = i.Quantity
             }).ToList();
 
+            var subtotal = items.Sum(x => x.LineTotal);
+
+            decimal discount = 0;
+            var userId = User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId != null && pointsToUse > 0)
+            {
+                decimal maxDiscount = subtotal * 0.10m;
+                int maxPoints = (int)Math.Floor(maxDiscount * 100);
+
+                var usablePoints = Math.Min(pointsToUse, maxPoints);
+                discount = usablePoints / 100m;
+            }
+
             var dto = new BagDto
             {
                 Id = bag.Id,
                 Items = items,
-                Subtotal = items.Sum(x => x.LineTotal)
+                Subtotal = subtotal,
+                Discount = discount,
+                Total = subtotal - discount
             };
 
             return Ok(dto);
