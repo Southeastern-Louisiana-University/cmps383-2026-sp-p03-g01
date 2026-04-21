@@ -48,6 +48,29 @@ a{
   cursor: pointer;
 }
 
+.rewards-section {
+  background-color: rgb(54, 40, 69);
+  color: rgb(216, 180, 254);
+  border-radius: 10px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.rewards-section input {
+  background-color: rgb(216, 180, 254);
+  color: rgb(54, 40, 69);
+  border: none;
+  border-radius: 5px;
+  padding: 5px;
+  margin-left: 10px;
+}
+
+.points-info {
+  font-size: 0.9em;
+  margin-top: 5px;
+  color: rgb(216, 180, 254);
+}
+
 .menu-card h2{
   margin-top: 0;
   margin-bottom: 8px;

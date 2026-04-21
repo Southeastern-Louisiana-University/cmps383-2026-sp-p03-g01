@@ -8,6 +8,7 @@ interface AuthContextType {
   login: (userName: string, password: string) => Promise<void>;
   signup: (userName: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
   isLoggedIn: boolean;
 }
 
@@ -17,15 +18,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserDto | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const refreshUser = async () => {
+    try {
+      const response = await fetch("/api/authentication/me");
+      if (response.ok) {
+        const data = await response.json() as UserDto;
+        setUser(data);
+      }
+    } catch (error) {
+      console.error("Error refreshing user data:", error);
+    }
+  };
+
   // Check authentication status on mount
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch("/api/authentication/me");
-        if (response.ok) {
-          const data = await response.json() as UserDto;
-          setUser(data);
-        }
+        await refreshUser();
       } catch (error) {
         console.error("Error checking auth status:", error);
       } finally {
@@ -112,6 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     login,
     signup,
     logout,
+    refreshUser,
     isLoggedIn: user !== null,
   };
 

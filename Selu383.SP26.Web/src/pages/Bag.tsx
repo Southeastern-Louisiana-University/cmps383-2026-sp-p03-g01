@@ -2,11 +2,14 @@ import "@/styles/App.css";
 import { useEffect, useState } from "react";
 import type { BagDto, BagItemDto } from "@/types/BagDto";
 import { BagService } from "@/services/bagService";
+import { useAuth } from "@/context/UserLoggedInContext";
 
 function Bag() {
     const [bag, setBag] = useState<BagDto | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [pointsToUse, setPointsToUse] = useState(0);
+    const { user, isLoggedIn, refreshUser } = useAuth();
 
     const fetchBag = async () => {
         try {
@@ -53,9 +56,11 @@ function Bag() {
 
     const handleCheckout = async () => {
         try {
-            await BagService.checkout();
+            await BagService.checkout(pointsToUse);
             alert("Checkout successful!");
             await fetchBag(); // Refresh bag data
+            await refreshUser(); // Refresh user data to get updated points
+            setPointsToUse(0); // Reset points after successful checkout
         } catch (err) {
             setError("Failed to checkout");
             console.error(err);
@@ -100,8 +105,39 @@ function Bag() {
                     </li>
                 ))}
             </ul>
+            <div className="rewards-section">
+                {isLoggedIn ? (
+                    <div>
+                        <h3>Rewards Points</h3>
+                        <p>You have {user?.rewardPoints || 0} points available</p>
+                        <div>
+                            <label htmlFor="pointsToUse">Points to use: </label>
+                            <input
+                                id="pointsToUse"
+                                type="number"
+                                min="0"
+                                max={user?.rewardPoints || 0}
+                                value={pointsToUse}
+                                onChange={(e) => setPointsToUse(Math.max(0, parseInt(e.target.value) || 0))}
+                            />
+                            <p className="points-info">
+                                Each point is worth $0.01. Maximum discount: ${((bag?.subtotal || 0) * 0.1).toFixed(2)}
+                            </p>
+                        </div>
+                    </div>
+                ) : (
+                    <div>
+                        <h3>Rewards System</h3>
+                        <p>Log in to take advantage of our rewards system!</p>
+                    </div>
+                )}
+            </div>
             <div className="bag-summary">
                 <h3>Subtotal: ${bag.subtotal.toFixed(2)}</h3>
+                {pointsToUse > 0 && (
+                    <p>Points discount: -${(pointsToUse * 0.01).toFixed(2)}</p>
+                )}
+                <h3>Total: ${(bag.subtotal - (pointsToUse * 0.01)).toFixed(2)}</h3>
                 <button onClick={handleCheckout}>Checkout</button>
             </div>
         </div>
