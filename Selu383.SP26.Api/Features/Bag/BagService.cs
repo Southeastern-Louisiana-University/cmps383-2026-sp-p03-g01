@@ -9,7 +9,7 @@ using System.Security.Claims;
 
 namespace Selu383.SP26.Api.Features.Bag;
 
-    public class BagService : IBagService
+public class BagService : IBagService
 {
     private const string SessionCookieName = "bag_session";
     private readonly DataContext _db;
@@ -24,15 +24,15 @@ namespace Selu383.SP26.Api.Features.Bag;
     private string? GetOrCreateSessionId()
     {
         var ctx = _http.HttpContext!;
-        
+
         if (ctx.Request.Headers.TryGetValue("X-Session-Id", out var header) && Guid.TryParse(header, out _))
             return header.ToString();
 
-        
+
         if (ctx.Request.Cookies.TryGetValue(SessionCookieName, out var sid) && Guid.TryParse(sid, out _))
             return sid;
 
-      
+
         var newSid = Guid.NewGuid().ToString();
         var cookieOptions = new CookieOptions
         {
@@ -60,7 +60,7 @@ namespace Selu383.SP26.Api.Features.Bag;
 
             if (userBag != null)
             {
-                
+
                 if (!string.IsNullOrEmpty(sessionId))
                 {
                     var anon = await _db.Set<Bag>()
@@ -69,7 +69,7 @@ namespace Selu383.SP26.Api.Features.Bag;
 
                     if (anon != null)
                     {
-                        
+
                         using var tx = await _db.Database.BeginTransactionAsync();
                         try
                         {
@@ -88,7 +88,7 @@ namespace Selu383.SP26.Api.Features.Bag;
                 return userBag;
             }
 
-          
+
             if (!string.IsNullOrEmpty(sessionId))
             {
                 var anon = await _db.Set<Bag>()
@@ -97,7 +97,7 @@ namespace Selu383.SP26.Api.Features.Bag;
 
                 if (anon != null)
                 {
-                    
+
                     using var tx = await _db.Database.BeginTransactionAsync();
                     try
                     {
@@ -115,7 +115,7 @@ namespace Selu383.SP26.Api.Features.Bag;
                 }
             }
 
-            
+
             var newBag = new Bag { UserId = userId, Status = BagStatus.Open };
             _db.Add(newBag);
             await _db.SaveChangesAsync();
@@ -227,47 +227,55 @@ namespace Selu383.SP26.Api.Features.Bag;
         {
             user = await _db.Set<User>().FindAsync(int.Parse(userId));
         }
-        if (user == null)
-            throw new InvalidOperationException("User must be logged in to earn points");
 
-        if (pointsToUse > user.RewardPoints)
+        if (user == null && pointsToUse > 0)
         {
-            throw new InvalidOperationException(
-                $"You only have {user.RewardPoints} points, so you cannot use {pointsToUse} points.");
+            throw new InvalidOperationException("You must be logged in to use reward points.");
         }
 
         var subtotal = bag.Subtotal;
 
-        decimal maxDiscount = subtotal * 0.10m;
+        decimal discount = 0;
 
-        int maxPointsForDiscount = (int)Math.Floor(maxDiscount * 100);
-
-        if (pointsToUse > maxPointsForDiscount)
+        if (user != null)
         {
-            throw new InvalidOperationException(
-            $"For this purchase, you cannot use more than {maxPointsForDiscount} points (10% maximum discount).");
+
+            if (pointsToUse > user.RewardPoints)
+            {
+                throw new InvalidOperationException(
+                    $"You only have {user.RewardPoints} points, so you cannot use {pointsToUse} points.");
+            }
+
+            decimal maxDiscount = subtotal * 0.10m;
+            int maxPointsForDiscount = (int)Math.Floor(maxDiscount * 100);
+
+            if (pointsToUse > maxPointsForDiscount)
+            {
+                throw new InvalidOperationException(
+                    $"For this purchase, you cannot use more than {maxPointsForDiscount} points (10% maximum discount).");
+            }
+
+            if (pointsToUse < 0)
+            {
+                throw new InvalidOperationException("Points cannot be negative.");
+            }
+
+            discount = pointsToUse / 100m;
+
+            if (pointsToUse > 0)
+            {
+                user.RewardPoints -= pointsToUse;
+            }
         }
-
-
-        if (pointsToUse < 0)
-        {
-            throw new InvalidOperationException(
-            $"Points cannot be negative.");
-        }
-
-        decimal discount = pointsToUse / 100m;
 
         decimal finalTotal = subtotal - discount;
 
-        if (pointsToUse > 0)
+        if (user != null)
         {
-            user.RewardPoints -= pointsToUse;
+            decimal amountSpentWithoutTax = finalTotal;
+            var earnedPoints = (int)Math.Round(amountSpentWithoutTax * 100);
+            user.RewardPoints += earnedPoints;
         }
-
-        decimal amountSpentWithoutTax = finalTotal;
-        var earnedPoints = (int)Math.Round(amountSpentWithoutTax * 100);
-
-        user.RewardPoints += earnedPoints;
 
         bag.Status = BagStatus.CheckedOut;
         bag.UpdateAt = DateTime.UtcNow;
