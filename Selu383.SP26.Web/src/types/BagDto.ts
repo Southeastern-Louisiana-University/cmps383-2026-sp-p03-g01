@@ -10,6 +10,7 @@ export interface BagDto {
     id: number;
     items: BagItemDto[];
     subtotal: number;
+    status: string;
 }
 
 export interface AddItemDto {

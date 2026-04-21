@@ -46,34 +46,46 @@ function Menu(){
     };
 
     return (
-      //Add some stuff that divdes the menu into categories and then lists the items in those categories.
       <div>
         <h2 style={{ textAlign: "center" }}>Our Menu</h2>
-         {items.length > 0 ? (
-        <ul>
-          {items.map((item) => (
-            <li className="card menu-card" key={item.id}>
-                <table style={{ alignItems: "flex-start" }}>
-                    <tr>
-                        <td><img className="menuItem" src={item.imageUrl} alt={item.name} /></td>
-                        <td>
+        {items.length > 0 ? (
+          (() => {
+            const grouped = items.reduce((acc, item) => {
+              if (!acc[item.category]) acc[item.category] = [];
+              acc[item.category].push(item);
+              return acc;
+            }, {} as Record<string, ItemDto[]>);
+
+            const sortedCategories = Object.keys(grouped).sort();
+
+            return sortedCategories.map(category => (
+              <div key={category} style={{ marginBottom: "30px" }}>
+                <h3 style={{ textAlign: "center" }}>{category}</h3>
+                <ul>
+                  {grouped[category].sort((a, b) => a.name.localeCompare(b.name)).map((item) => (
+                    <li className="card menu-card" key={item.id}>
+                      <table style={{ alignItems: "flex-start" }}>
+                        <tr>
+                          <td><img className="menuItem" src={item.imageUrl} alt={item.name} /></td>
+                          <td>
                             <h2>{item.name}</h2>
                             <p style={{ fontWeight: "bold" }}>Price: ${item.price.toFixed(2)}</p>
                             <p>{item.description}</p>
                             <button onClick={() => handleAddToBag(item.id)} disabled={addingToBag === item.id}>
-                                {addingToBag === item.id ? "Adding..." : addedToBag.has(item.id) ? "Added!" : "Add to bag"}
+                              {addingToBag === item.id ? "Adding..." : addedToBag.has(item.id) ? "Added!" : "Add to bag"}
                             </button>
-                        </td>
-                    </tr>
-                </table>
-                
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>No items available.</p>
-      )}
-
+                          </td>
+                        </tr>
+                      </table>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ));
+          })()
+        ) : (
+          <p>No items available.</p>
+        )}
       </div>
     )
 }
