@@ -11,9 +11,10 @@ export async function getBag() {
   return res.json();
 }
 
+// FIX: Added /items to the path
 export async function addItem(itemId: number, quantity: number = 1) {
   const sid = await getSessionId();
-  const res = await fetch(`${API_URL}/bag`, {
+  const res = await fetch(`${API_URL}/bag/items`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -24,22 +25,24 @@ export async function addItem(itemId: number, quantity: number = 1) {
   if (!res.ok) throw new Error("Could not add item");
 }
 
+// FIX: Changed PUT to PATCH and updated path to /bag/items/{itemId}
 export async function updateItem(itemId: number, quantity: number) {
   const sid = await getSessionId();
-  const res = await fetch(`${API_URL}/bag`, {
-    method: "PUT",
+  const res = await fetch(`${API_URL}/bag/items/${itemId}`, {
+    method: "PATCH",
     headers: {
       "Content-Type": "application/json",
       "X-Session-Id": sid,
     },
-    body: JSON.stringify({ itemId, quantity }),
+    body: JSON.stringify({ quantity }), // Swagger usually just needs quantity here
   });
   if (!res.ok) throw new Error("Could not update item");
 }
 
+// FIX: Updated path to /bag/items/{itemId}
 export async function removeItem(itemId: number) {
   const sid = await getSessionId();
-  const res = await fetch(`${API_URL}/bag/${itemId}`, {
+  const res = await fetch(`${API_URL}/bag/items/${itemId}`, {
     method: "DELETE",
     headers: { "X-Session-Id": sid },
   });

@@ -16,7 +16,7 @@ type Item = {
   description: string;
   price: number;
   nutrition: string;
-  imageUrl: string; // ✅ Added field
+  imageUrl: string;
 };
 
 type Location = { id: number; name: string };
@@ -29,6 +29,7 @@ export default function HomeScreen() {
 
   const bag = useBag();
 
+  // FIX: Moved inside HomeScreen so it can access setTracks, setLoading, etc.
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -40,23 +41,22 @@ export default function HomeScreen() {
       const itemsData = await itemsRes.json();
       const locationsData = await locationsRes.json();
 
+      // Better handling of response data structure
       const rawItems = Array.isArray(itemsData)
         ? itemsData
         : itemsData?.items || [];
-
       const formattedItems = rawItems.map((item: any) => ({
         id: item.id ?? item.Id,
         name: item.name ?? item.Name ?? "Unknown Item",
         description: item.description ?? item.Description ?? "",
         price: item.price ?? item.Price ?? 0,
         nutrition: item.nutrition ?? item.Nutrition ?? "",
-        imageUrl: item.imageUrl ?? item.ImageUrl ?? "", // ✅ Map imageUrl from Swagger
+        imageUrl: item.imageUrl ?? item.ImageUrl ?? "",
       }));
 
       const rawLocations = Array.isArray(locationsData)
         ? locationsData
         : locationsData?.locations || [];
-
       const formattedLocations = rawLocations.map((loc: any) => ({
         id: loc.id ?? loc.Id,
         name: loc.name ?? loc.Name ?? "Unknown Location",
@@ -87,7 +87,6 @@ export default function HomeScreen() {
 
     return (
       <View style={styles.pill}>
-        {/* ✅ Render seeded image if available */}
         {item.imageUrl ? (
           <Image
             source={{ uri: item.imageUrl }}
@@ -112,6 +111,7 @@ export default function HomeScreen() {
           ]}
           onPress={async () => {
             try {
+              // Ensure your BagContext handles the ID correctly
               await bag.add(item.id);
             } catch (e) {
               console.log("Bag error:", e);

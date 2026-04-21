@@ -1,4 +1,5 @@
 import * as SecureStore from "expo-secure-store";
+import "react-native-get-random-values";
 import { v4 as uuid } from "uuid";
 
 export async function getSessionId() {
