@@ -11,8 +11,21 @@ import { Outlet, Link } from "react-router";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
+//Auth import
+import { useAuth } from "@/context/UserLoggedInContext";
 
 export function NavBar() {
+  const { user, isLoggedIn, logout } = useAuth();
+  const isAdmin = isLoggedIn && user && user.roles.includes("Admin");
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
+
   return (
     <div>
     <div className="totalBar">
@@ -24,12 +37,25 @@ export function NavBar() {
 
         <div className="headRight">
           <ul>
-            <li>
-              <button className="accountButtons"><Link to="/login">Login</Link></button>
-            </li>
-            <li>
-              <button className="accountButtons"><Link to="/signup">Signup</Link></button>
-            </li>
+            {isAdmin && (
+              <li>
+                <button className="accountButtons"><Link to="/admin">Admin</Link></button>
+              </li>
+            )}
+            {isLoggedIn ? (
+              <li>
+                <button className="accountButtons" onClick={handleLogout}>Logout</button>
+              </li>
+            ) : (
+              <>
+                <li>
+                  <button className="accountButtons"><Link to="/login">Login</Link></button>
+                </li>
+                <li>
+                  <button className="accountButtons"><Link to="/signup">Signup</Link></button>
+                </li>
+              </>
+            )}
           </ul>
         </div>
       </div>
@@ -39,12 +65,6 @@ export function NavBar() {
           <List className="nav" style={{ display: 'flex', justifyContent: 'center' }}>
             <ListItem className="navItem">
               <Link to="/Menu">Menu</Link>
-            </ListItem>
-
-            <ListItem className="navDivider">|</ListItem>
-
-            <ListItem className="navItem">
-              <Link to="/Rewards">Rewards</Link>
             </ListItem>
 
             <ListItem className="navDivider">|</ListItem>

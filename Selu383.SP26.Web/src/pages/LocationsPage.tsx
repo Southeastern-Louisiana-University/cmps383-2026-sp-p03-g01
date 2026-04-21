@@ -24,9 +24,10 @@ function LocationsPage(){
     
     return (
       <div>
-        <h2>Here's where you can find us!</h2>
+        <h2 style={{ textAlign: "center" }}>Here's where you can find us!</h2>
 
          {locations.length > 0 ? (
+        
         <ul>
           {locations.map((location) => (
             <li className="card" key={location.id}>

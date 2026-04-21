@@ -1,13 +1,15 @@
 ﻿
-using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using Selu383.SP26.Api.Data;
+using Selu383.SP26.Api.Features.Auth;
 using Selu383.SP26.Api.Features.Bag;
 using Selu383.SP26.Api.Features.Items;
+using Selu383.SP26.Api.Features.Rewards;
+using System.Security.Claims;
 
 namespace Selu383.SP26.Api.Features.Bag;
 
-    public class BagService : IBagService
+public class BagService : IBagService
 {
     private const string SessionCookieName = "bag_session";
     private readonly DataContext _db;
@@ -22,15 +24,15 @@ namespace Selu383.SP26.Api.Features.Bag;
     private string? GetOrCreateSessionId()
     {
         var ctx = _http.HttpContext!;
-        
+
         if (ctx.Request.Headers.TryGetValue("X-Session-Id", out var header) && Guid.TryParse(header, out _))
             return header.ToString();
 
-        
+
         if (ctx.Request.Cookies.TryGetValue(SessionCookieName, out var sid) && Guid.TryParse(sid, out _))
             return sid;
 
-      
+
         var newSid = Guid.NewGuid().ToString();
         var cookieOptions = new CookieOptions
         {
@@ -58,7 +60,7 @@ namespace Selu383.SP26.Api.Features.Bag;
 
             if (userBag != null)
             {
-                
+
                 if (!string.IsNullOrEmpty(sessionId))
                 {
                     var anon = await _db.Set<Bag>()
@@ -67,7 +69,7 @@ namespace Selu383.SP26.Api.Features.Bag;
 
                     if (anon != null)
                     {
-                        
+
                         using var tx = await _db.Database.BeginTransactionAsync();
                         try
                         {
@@ -86,7 +88,7 @@ namespace Selu383.SP26.Api.Features.Bag;
                 return userBag;
             }
 
-          
+
             if (!string.IsNullOrEmpty(sessionId))
             {
                 var anon = await _db.Set<Bag>()
@@ -95,7 +97,7 @@ namespace Selu383.SP26.Api.Features.Bag;
 
                 if (anon != null)
                 {
-                    
+
                     using var tx = await _db.Database.BeginTransactionAsync();
                     try
                     {
@@ -113,7 +115,7 @@ namespace Selu383.SP26.Api.Features.Bag;
                 }
             }
 
-            
+
             var newBag = new Bag { UserId = userId, Status = BagStatus.Open };
             _db.Add(newBag);
             await _db.SaveChangesAsync();
@@ -157,6 +159,7 @@ namespace Selu383.SP26.Api.Features.Bag;
         }
     }
 
+
     public async Task AddItemAsync(int itemId, int quantity)
     {
         var bag = await GetOrCreateBagAsync();
@@ -168,11 +171,15 @@ namespace Selu383.SP26.Api.Features.Bag;
         else
         {
             var item = await _db.Set<Item>().FindAsync(itemId);
+
+            if (item == null)
+                throw new ArgumentException("Item not found");
+
             bag.Items.Add(new BagItem
             {
                 ItemId = itemId,
                 Quantity = quantity,
-                UnitPriceSnapshot = item != null ? item.Price : 0m 
+                UnitPriceSnapshot = item.Price
             });
         }
         await _db.SaveChangesAsync();
@@ -206,16 +213,75 @@ namespace Selu383.SP26.Api.Features.Bag;
         await _db.SaveChangesAsync();
     }
 
-    public async Task CheckoutAsync()
+    public async Task CheckoutAsync(int pointsToUse = 0)
     {
         var bag = await GetOrCreateBagAsync();
-        if (bag.Items == null || !bag.Items.Any())
+
+        if (!bag.Items.Any())
             throw new InvalidOperationException("Cannot checkout an empty bag");
 
-        
+        var userId = _http.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        User? user = null;
+
+        if (userId != null)
+        {
+            user = await _db.Set<User>().FindAsync(int.Parse(userId));
+        }
+
+        if (user == null && pointsToUse > 0)
+        {
+            throw new InvalidOperationException("You must be logged in to use reward points.");
+        }
+
+        var subtotal = bag.Subtotal;
+
+        decimal discount = 0;
+
+        if (user != null)
+        {
+
+            if (pointsToUse > user.RewardPoints)
+            {
+                throw new InvalidOperationException(
+                    $"You only have {user.RewardPoints} points, so you cannot use {pointsToUse} points.");
+            }
+
+            decimal maxDiscount = subtotal * 0.10m;
+            int maxPointsForDiscount = (int)Math.Floor(maxDiscount * 100);
+
+            if (pointsToUse > maxPointsForDiscount)
+            {
+                throw new InvalidOperationException(
+                    $"For this purchase, you cannot use more than {maxPointsForDiscount} points (10% maximum discount).");
+            }
+
+            if (pointsToUse < 0)
+            {
+                throw new InvalidOperationException("Points cannot be negative.");
+            }
+
+            discount = pointsToUse / 100m;
+
+            if (pointsToUse > 0)
+            {
+                user.RewardPoints -= pointsToUse;
+            }
+        }
+
+        decimal finalTotal = subtotal - discount;
+
+        if (user != null)
+        {
+            decimal amountSpentWithoutTax = finalTotal;
+            var earnedPoints = (int)Math.Round(amountSpentWithoutTax * 100);
+            user.RewardPoints += earnedPoints;
+        }
+
         bag.Status = BagStatus.CheckedOut;
         bag.UpdateAt = DateTime.UtcNow;
+
         await _db.SaveChangesAsync();
     }
-    
+
 }

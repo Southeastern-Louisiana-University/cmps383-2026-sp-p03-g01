@@ -53,6 +53,7 @@ public class UsersController : ControllerBase
             Id = newUser.Id,
             Roles = dto.Roles,
             UserName = newUser.UserName,
+            RewardPoints = newUser.RewardPoints
         });
     }
 }

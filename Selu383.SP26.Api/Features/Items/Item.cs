@@ -14,6 +14,7 @@ public class Item
     public string Nutrition { get; set; } = string.Empty;
 
     public string ImageUrl { get; set; } = string.Empty;
+    public string Category { get; set; } = string.Empty;
 
     public List<ExtraOption> Extras { get; set; } = new();
 }
