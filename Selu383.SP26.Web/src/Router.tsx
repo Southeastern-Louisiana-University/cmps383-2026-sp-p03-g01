@@ -6,7 +6,6 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 import Home from "@/pages/Home";
 import Menu from "@/pages/Menu";
-import Rewards from "@/pages/Rewards";
 import LocationsPage from "@/pages/LocationsPage";
 import Bag from "@/pages/Bag";
 import Account from "@/pages/Account";
@@ -23,7 +22,6 @@ export function Router() {
         <Route element={<NavBar />}>
           <Route index element={<Home />} />
           <Route path="menu" element={<Menu />} />
-          <Route path="rewards" element={<Rewards />} />
           <Route path="locations" element={<LocationsPage />} />
           <Route path="bag" element={<Bag />} />
           <Route path="login" element={<Login />} />

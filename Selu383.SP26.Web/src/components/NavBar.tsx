@@ -70,12 +70,6 @@ export function NavBar() {
             <ListItem className="navDivider">|</ListItem>
 
             <ListItem className="navItem">
-              <Link to="/Rewards">Rewards</Link>
-            </ListItem>
-
-            <ListItem className="navDivider">|</ListItem>
-
-            <ListItem className="navItem">
               <Link to="/locations">Locations
                 <img src={pin} alt="Pin" id="pinIcon"></img>
               </Link>
