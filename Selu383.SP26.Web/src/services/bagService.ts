@@ -4,7 +4,9 @@ const API_BASE = "/api";
 
 export class BagService {
     static async getBag(): Promise<BagDto> {
-        const response = await fetch(`${API_BASE}/bag`);
+        const response = await fetch(`${API_BASE}/bag`, {
+            credentials: "include",
+        });
         if (!response.ok) {
             throw new Error("Failed to fetch bag");
         }
@@ -46,9 +48,14 @@ export class BagService {
         }
     }
 
-    static async checkout(): Promise<void> {
+    static async checkout(pointsToUse: number = 0): Promise<void> {
         const response = await fetch(`${API_BASE}/bag/checkout`, {
             method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({ pointsToUse }),
         });
         if (!response.ok) {
             throw new Error("Failed to checkout");

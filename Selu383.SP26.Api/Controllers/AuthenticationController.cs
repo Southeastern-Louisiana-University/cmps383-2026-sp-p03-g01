@@ -104,6 +104,7 @@ public class AuthenticationController : ControllerBase
         {
             Id = x.Id,
             UserName = x.UserName!,
+            RewardPoints = x.RewardPoints,
             Roles = x.UserRoles.Select(y => y.Role!.Name).ToArray()!
         });
     }

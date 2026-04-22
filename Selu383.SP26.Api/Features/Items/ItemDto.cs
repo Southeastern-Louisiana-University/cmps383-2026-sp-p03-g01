@@ -8,6 +8,8 @@
         public string Description { get; set; } = string.Empty;
         public string Nutrition { get; set; } = string.Empty;
         public string ImageUrl { get; set; } = string.Empty;
+        public string Category { get; set; } = string.Empty;
+        public bool? Featured { get; set; } = false;
         public List<ExtraOptionDto> Extras { get; set; } = new();
     }
 }

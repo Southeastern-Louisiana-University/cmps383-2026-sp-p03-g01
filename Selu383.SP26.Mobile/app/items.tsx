@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  Image, // ✅ Added Image import
   Pressable,
   SafeAreaView,
   StyleSheet,
@@ -16,6 +17,7 @@ type Item = {
   description: string;
   price: number;
   nutrition: string;
+  imageUrl: string; // ✅ Added field
 };
 
 export default function Items() {
@@ -37,9 +39,19 @@ export default function Items() {
             ? data.items
             : [];
 
-        setItems(list);
+        const formattedList = list.map((item: any) => ({
+          id: item.id ?? item.Id,
+          name: item.name ?? item.Name ?? "Unknown Item",
+          description: item.description ?? item.Description ?? "",
+          price: item.price ?? item.Price ?? 0,
+          nutrition: item.nutrition ?? item.Nutrition ?? "N/A",
+          imageUrl: item.imageUrl ?? item.ImageUrl ?? "", // ✅ Added mapping
+        }));
+
+        setItems(formattedList);
       } catch (err) {
-        setItems([]); // no fallback
+        console.error("Fetch error:", err);
+        setItems([]);
       }
 
       setLoading(false);
@@ -64,8 +76,25 @@ export default function Items() {
         contentContainerStyle={styles.listContent}
         renderItem={({ item }) => (
           <View style={styles.itemRow}>
+            {/* ✅ Added Product Image */}
+            {item.imageUrl ? (
+              <Image
+                source={{ uri: item.imageUrl }}
+                style={styles.productImage}
+                resizeMode="cover"
+              />
+            ) : (
+              <View style={[styles.productImage, styles.placeholderImage]}>
+                <Text style={{ color: "#444" }}>No Image</Text>
+              </View>
+            )}
+
             <Text style={styles.itemName}>{item.name}</Text>
-            <Text style={styles.itemPrice}>${item.price.toFixed(2)}</Text>
+
+            <Text style={styles.itemPrice}>
+              ${typeof item.price === "number" ? item.price.toFixed(2) : "0.00"}
+            </Text>
+
             <Text style={styles.itemDescription}>{item.description}</Text>
             <Text style={styles.itemNutrition}>{item.nutrition}</Text>
 
@@ -105,15 +134,27 @@ const styles = StyleSheet.create({
   listContent: {
     padding: 20,
   },
-
   itemRow: {
     backgroundColor: "#1a1a1a",
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
     borderColor: "#333",
+    borderRadius: 8,
   },
-
+  productImage: {
+    width: "100%",
+    height: 150,
+    borderRadius: 6,
+    marginBottom: 12,
+    backgroundColor: "#222",
+  },
+  placeholderImage: {
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#333",
+  },
   itemName: {
     color: "#d8b4fe",
     fontSize: 20,
@@ -137,17 +178,16 @@ const styles = StyleSheet.create({
     opacity: 0.6,
     marginTop: 4,
   },
-
   addButton: {
-    backgroundColor: "#fff",
-    paddingVertical: 8,
+    backgroundColor: "#d8b4fe",
+    paddingVertical: 10,
     paddingHorizontal: 16,
     marginTop: 12,
-    borderWidth: 1,
-    borderColor: "#000",
+    borderRadius: 4,
   },
   addButtonText: {
-    color: "#000",
+    color: "#362845",
     fontWeight: "700",
+    textAlign: "center",
   },
 });
