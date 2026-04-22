@@ -54,12 +54,16 @@ function Admin() {
   const handleToggleFeatured = async (itemId: number, currentFeatured: boolean) => {
     try {
       setUpdating(prev => new Set(prev).add(itemId));
-      const response = await fetch(`/api/items/${itemId}/featured`, {
+      const itemToUpdate = items.find(item => item.id === itemId);
+      if (!itemToUpdate) return;
+
+      const updatedItem = { ...itemToUpdate, featured: !currentFeatured };
+      const response = await fetch(`/api/items/${itemId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ featured: !currentFeatured }),
+        body: JSON.stringify(updatedItem),
       });
       if (response.ok) {
         setItems(prev => prev.map(item =>
