@@ -52,7 +52,14 @@ public static class SeedHelper
             UserName = "sue"
         };
         await userManager.CreateAsync(sue, defaultPassword);
-        await userManager.AddToRoleAsync(sue, RoleNames.User);
+        await userManager.AddToRoleAsync(sue, RoleNames.Employee);
+
+        var mark = new User
+        {
+            UserName = "mark"
+        };
+        await userManager.CreateAsync(mark, defaultPassword);
+        await userManager.AddToRoleAsync(mark, RoleNames.Manager);
     }
 
     private static async Task AddRoles(IServiceProvider serviceProvider)
@@ -70,6 +77,16 @@ public static class SeedHelper
         await roleManager.CreateAsync(new Role
         {
             Name = RoleNames.User
+        });
+
+        await roleManager.CreateAsync(new Role
+        {
+           Name = RoleNames.Employee
+        });
+
+        await roleManager.CreateAsync(new Role
+        {
+            Name = RoleNames.Manager
         });
     }
 

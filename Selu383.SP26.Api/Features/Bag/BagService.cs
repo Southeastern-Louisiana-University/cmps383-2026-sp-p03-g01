@@ -217,5 +217,16 @@ namespace Selu383.SP26.Api.Features.Bag;
         bag.UpdateAt = DateTime.UtcNow;
         await _db.SaveChangesAsync();
     }
+
+    public async Task<List<Bag>> GetCheckedOutBagsAsync()
+    {
+        return await _db.Set<Bag>()
+            .Where(b => b.Status == BagStatus.CheckedOut)
+            .Include(b => b.Items)
+            .ThenInclude(i => i.Item)
+            .ToListAsync();
+    }
+
+   
     
 }

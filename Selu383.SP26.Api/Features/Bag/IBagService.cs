@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Selu383.SP26.Api.Features.Bag
 {
@@ -10,5 +11,6 @@ namespace Selu383.SP26.Api.Features.Bag
         Task RemoveItemAsync(int itemId);
         Task UpdateItemQuantityAsync(int itemId, int quantity);
         Task CheckoutAsync();
+        Task<List<Bag>> GetCheckedOutBagsAsync();
     }
 }

@@ -60,8 +60,14 @@ public class AuthenticationController : ControllerBase
     }
 
     [HttpPost("register")]
+    [AllowAnonymous]
     public async Task<ActionResult<UserDto>> Register(RegisterDto dto)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         var newUser = new User
         {
             UserName = dto.UserName,
@@ -70,7 +76,7 @@ public class AuthenticationController : ControllerBase
         var createResult = await userManager.CreateAsync(newUser, dto.Password);
         if (!createResult.Succeeded)
         {
-            return BadRequest();
+            return BadRequest(createResult.Errors.Select(e => e.Description));
         }
 
         try
@@ -78,12 +84,12 @@ public class AuthenticationController : ControllerBase
             var roleResult = await userManager.AddToRoleAsync(newUser, RoleNames.User);
             if (!roleResult.Succeeded)
             {
-                return BadRequest();
+                return BadRequest(roleResult.Errors.Select(e => e.Description));
             }
         }
         catch (InvalidOperationException e) when (e.Message.StartsWith("Role") && e.Message.EndsWith("does not exist."))
         {
-            return BadRequest();
+            return BadRequest("Role does not exist");
         }
 
         await signInManager.SignInAsync(newUser, false);
