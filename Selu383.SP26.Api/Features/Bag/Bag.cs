@@ -10,6 +10,7 @@ namespace Selu383.SP26.Api.Features.Bag
     {
         Open,
         CheckedOut,
+        Completed,
         Abandoned
     }
 

@@ -59,12 +59,52 @@ public class AuthenticationController : ControllerBase
         return Ok();
     }
 
+    [HttpPost("register")]
+    [AllowAnonymous]
+    public async Task<ActionResult<UserDto>> Register(RegisterDto dto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var newUser = new User
+        {
+            UserName = dto.UserName,
+        };
+
+        var createResult = await userManager.CreateAsync(newUser, dto.Password);
+        if (!createResult.Succeeded)
+        {
+            return BadRequest(createResult.Errors.Select(e => e.Description));
+        }
+
+        try
+        {
+            var roleResult = await userManager.AddToRoleAsync(newUser, RoleNames.User);
+            if (!roleResult.Succeeded)
+            {
+                return BadRequest(roleResult.Errors.Select(e => e.Description));
+            }
+        }
+        catch (InvalidOperationException e) when (e.Message.StartsWith("Role") && e.Message.EndsWith("does not exist."))
+        {
+            return BadRequest("Role does not exist");
+        }
+
+        await signInManager.SignInAsync(newUser, false);
+
+        var resultDto = await GetUserDto(userManager.Users).SingleAsync(x => x.UserName == newUser.UserName);
+        return Ok(resultDto);
+    }
+
     private static IQueryable<UserDto> GetUserDto(IQueryable<User> users)
     {
         return users.Select(x => new UserDto
         {
             Id = x.Id,
             UserName = x.UserName!,
+            RewardPoints = x.RewardPoints,
             Roles = x.UserRoles.Select(y => y.Role!.Name).ToArray()!
         });
     }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Selu383.SP26.Api.Data;
 using Selu383.SP26.Api.Features.Items;
+using Selu383.SP26.Api.Features.Auth;
 
 
 namespace Selu383.SP26.Api.Controllers
@@ -19,11 +20,10 @@ namespace Selu383.SP26.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<BagDto>> GetBag()
+        public async Task<ActionResult<BagDto>> GetBag([FromQuery] int pointsToUse = 0)
         {
             var bag = await _bagsService.GetOrCreateBagAsync();
 
-            
             var items = bag.Items.Select(i => new BagItemDto
             {
                 ItemId = i.ItemId,
@@ -32,11 +32,27 @@ namespace Selu383.SP26.Api.Controllers
                 Quantity = i.Quantity
             }).ToList();
 
+            var subtotal = items.Sum(x => x.LineTotal);
+
+            decimal discount = 0;
+            var userId = User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId != null && pointsToUse > 0)
+            {
+                decimal maxDiscount = subtotal * 0.10m;
+                int maxPoints = (int)Math.Floor(maxDiscount * 100);
+
+                var usablePoints = Math.Min(pointsToUse, maxPoints);
+                discount = usablePoints / 100m;
+            }
+
             var dto = new BagDto
             {
                 Id = bag.Id,
                 Items = items,
-                Subtotal = items.Sum(x => x.LineTotal)
+                Subtotal = subtotal,
+                Discount = discount,
+                Total = subtotal - discount
             };
 
             return Ok(dto);
@@ -81,15 +97,59 @@ namespace Selu383.SP26.Api.Controllers
         }
 
         [HttpPost("checkout")]
-        public async Task<IActionResult> Checkout()
+        public async Task<IActionResult> Checkout([FromBody] CheckoutDto dto)
         {
             try
             {
-                await _bagsService.CheckoutAsync();
-                return NoContent();
+                await _bagsService.CheckoutAsync(dto.PointsToUse);
+                return Ok(new
+                {
+                    message = "Checkout successful"
+                });
+
             }
             catch (InvalidOperationException ex) { return BadRequest(ex.Message); }
         }
+
+        [HttpGet("checkedout")]
+        [Authorize(Roles = RoleNames.Admin + ", " + RoleNames.Manager + ", " + RoleNames.Employee)]
+        public async Task<ActionResult<IEnumerable<BagDto>>> GetCheckedOutBags()
+        {
+            var bags = await _bagsService.GetCheckedOutBagsAsync();
+
+            var dtos = bags.Select(b => new BagDto
+            {
+                Id = b.Id,
+                Items = b.Items.Select(i => new BagItemDto
+                {
+                    ItemId = i.ItemId,
+                    Name = i.Item?.Name ?? string.Empty,
+                    Price = i.UnitPriceSnapshot,
+                    Quantity = i.Quantity
+                }).ToList(),
+                Subtotal = b.Items.Sum(i => i.LineTotal)
+            });
+
+            return Ok(dtos);
+        }
+
+        [HttpPost("{bagId}/complete")]
+        [Authorize(Roles = RoleNames.Admin + ", " + RoleNames.Manager + ", " + RoleNames.Employee)]
+        public async Task<IActionResult> MarkBagCompleted([FromRoute] int bagId)
+        {
+            try
+            {
+                await _bagsService.MarkBagCompletedAsync(bagId);
+                return Ok(new
+                {
+                    message = "Bag marked as completed"
+                });
+            }
+            catch (KeyNotFoundException) { return NotFound(); }
+            catch (InvalidOperationException ex) { return BadRequest(ex.Message); }
+        }
+
+
     }
 
 }

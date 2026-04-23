@@ -4,4 +4,6 @@ export interface ItemDto {
     name: string; 
     description: string; 
     imageUrl: string;
+    featured: boolean;
+    category: string;
 }

@@ -26,11 +26,9 @@ export function LocationDetailPage() {
 
   return (
     <div id="map">
-      <h1>Location Detail Page {locationId}</h1>
-      <div>
-        <iframe width="400px" height="400px" src="https://maps.google.com/maps?hl=en&amp;q=610%20Ned%20McGehee%20Drive,%20Hammond,%20Louisiana%2070402+(Caffinated%20Lions)&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"></iframe>
-      </div>
-      <span>{location === undefined ? "Loading..." : location.address}</span>
+      <h1>{location?.name}</h1>
+      <p>{location === undefined ? "Loading..." : location.address}</p>
+      <button style={{ backgroundColor: "rgb(216, 180, 254)", color: "rgb(54, 40, 69)", border: "none", borderRadius: "5px", padding: "5px", cursor: "pointer" }}>Order from here</button>
     </div>
   );
 }
