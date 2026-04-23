@@ -18,6 +18,7 @@ function Admin() {
   const [checkedOutBags, setCheckedOutBags] = useState<BagDto[]>([]);
   const [loadingCheckedOut, setLoadingCheckedOut] = useState(true);
   const [checkedOutError, setCheckedOutError] = useState<string | null>(null);
+  const [updatingBags, setUpdatingBags] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     fetchItems();
@@ -165,6 +166,23 @@ function Admin() {
     }
   };
 
+  const handleMarkComplete = async (bagId: number) => {
+    try {
+      setUpdatingBags(prev => new Set(prev).add(bagId));
+      await BagService.updateBagStatus(bagId);
+      fetchCheckedOutBags(); // Refresh the list
+    } catch (error) {
+      console.error("Error marking bag as complete:", error);
+      alert("Failed to mark bag as complete");
+    } finally {
+      setUpdatingBags(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(bagId);
+        return newSet;
+      });
+    }
+  };
+
   return (
     <div className="card">
       <h2>Admin Panel</h2>
@@ -188,6 +206,9 @@ function Admin() {
                   </div>
                 ))}
               </div>
+              <button onClick={() => handleMarkComplete(bag.id)} disabled={updatingBags.has(bag.id)} style={{ marginTop: "10px" }}>
+                {updatingBags.has(bag.id) ? "Completing..." : "Mark as Complete"}
+              </button>
             </div>
           ))
         ) : (

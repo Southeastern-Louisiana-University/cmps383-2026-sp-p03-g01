@@ -59,6 +59,17 @@ export class BagService {
         }
     }
 
+    static async updateBagStatus(bagId: number): Promise<void> {
+        const response = await fetch(`${API_BASE}/bag/${bagId}/complete`, {
+            method: "POST",
+            credentials: "include",
+        });
+        if (!response.ok) {
+            const body = await response.text().catch(() => "");
+            throw new Error(`Failed to update bag status: ${response.status} ${response.statusText} ${body}`);
+        }
+    }
+
     static async checkout(pointsToUse: number = 0): Promise<void> {
         const response = await fetch(`${API_BASE}/bag/checkout`, {
             method: "POST",
