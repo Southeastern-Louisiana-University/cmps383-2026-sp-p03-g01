@@ -11,7 +11,6 @@ export async function getBag() {
   return res.json();
 }
 
-// FIX: Added /items to the path
 export async function addItem(itemId: number, quantity: number = 1) {
   const sid = await getSessionId();
   const res = await fetch(`${API_URL}/bag/items`, {
@@ -25,7 +24,6 @@ export async function addItem(itemId: number, quantity: number = 1) {
   if (!res.ok) throw new Error("Could not add item");
 }
 
-// FIX: Changed PUT to PATCH and updated path to /bag/items/{itemId}
 export async function updateItem(itemId: number, quantity: number) {
   const sid = await getSessionId();
   const res = await fetch(`${API_URL}/bag/items/${itemId}`, {
@@ -34,26 +32,52 @@ export async function updateItem(itemId: number, quantity: number) {
       "Content-Type": "application/json",
       "X-Session-Id": sid,
     },
-    body: JSON.stringify({ quantity }), // Swagger usually just needs quantity here
+    body: JSON.stringify({ quantity }),
   });
   if (!res.ok) throw new Error("Could not update item");
 }
 
-// FIX: Updated path to /bag/items/{itemId}
 export async function removeItem(itemId: number) {
   const sid = await getSessionId();
   const res = await fetch(`${API_URL}/bag/items/${itemId}`, {
     method: "DELETE",
     headers: { "X-Session-Id": sid },
   });
-  if (!res.ok) throw new Error("Could not remove item");
+
+  if (res.status === 204) return;
+
+  if (res.status === 404) return;
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Could not remove item: ${res.status} ${text}`);
+  }
 }
 
-export async function checkout() {
+  export async function checkout() {
   const sid = await getSessionId();
+
+  console.log("Checkout: session ID =", sid);
+
   const res = await fetch(`${API_URL}/bag/checkout`, {
     method: "POST",
-    headers: { "X-Session-Id": sid },
+    headers: {
+      "Content-Type": "application/json",
+      "X-Session-Id": sid,
+    },
+    body: JSON.stringify({}),
   });
-  if (!res.ok) throw new Error("Checkout failed");
+
+  const text = await res.text();
+  console.log("Checkout response:", res.status, text);
+
+  if (!res.ok) {
+    throw new Error(`Checkout failed: ${res.status} - ${text}`);
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null; 
+  }
 }
