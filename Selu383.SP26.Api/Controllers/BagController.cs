@@ -133,7 +133,23 @@ namespace Selu383.SP26.Api.Controllers
             return Ok(dtos);
         }
 
-        
+        [HttpPost("{bagId}/complete")]
+        [Authorize(Roles = RoleNames.Admin + ", " + RoleNames.Manager + ", " + RoleNames.Employee)]
+        public async Task<IActionResult> MarkBagCompleted([FromRoute] int bagId)
+        {
+            try
+            {
+                await _bagsService.MarkBagCompletedAsync(bagId);
+                return Ok(new
+                {
+                    message = "Bag marked as completed"
+                });
+            }
+            catch (KeyNotFoundException) { return NotFound(); }
+            catch (InvalidOperationException ex) { return BadRequest(ex.Message); }
+        }
+
+
     }
 
 }

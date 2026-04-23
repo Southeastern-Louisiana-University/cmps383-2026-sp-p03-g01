@@ -294,4 +294,16 @@ public class BagService : IBagService
         await _db.SaveChangesAsync();
     }
 
+    public async Task MarkBagCompletedAsync(int bagId)
+    {
+       var bag = await _db.Set<Bag>().FindAsync(bagId);
+        if (bag == null)
+            throw new KeyNotFoundException("Bag not found");
+        if (bag.Status != BagStatus.CheckedOut)
+            throw new InvalidOperationException("Only checked out bags can be marked as completed");
+        bag.Status = BagStatus.Completed;
+        bag.UpdateAt = DateTime.UtcNow;
+        await _db.SaveChangesAsync();
+    }
+
 }
