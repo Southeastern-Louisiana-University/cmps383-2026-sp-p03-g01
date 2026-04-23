@@ -13,6 +13,17 @@ export class BagService {
         return response.json();
     }
 
+    static async getCheckedOutBags(): Promise<BagDto[]> {
+        const response = await fetch(`${API_BASE}/bag/checkedout`, {
+            credentials: "include",
+        });
+        if (!response.ok) {
+            const body = await response.text().catch(() => "");
+            throw new Error(`Failed to fetch checked out bags: ${response.status} ${response.statusText} ${body}`);
+        }
+        return response.json();
+    }
+
     static async addItem(itemId: number, quantity: number = 1): Promise<void> {
         const response = await fetch(`${API_BASE}/bag/items`, {
             method: "POST",

@@ -1,6 +1,7 @@
 import type { ItemDto } from "@/types/ItemDto";
 import type { BagDto } from "@/types/BagDto";
 import { useEffect, useState } from "react";
+import { BagService } from "@/services/bagService";
 
 function Admin() {
   const [items, setItems] = useState<ItemDto[]>([]);
@@ -15,6 +16,8 @@ function Admin() {
   });
   const [editingItem, setEditingItem] = useState<ItemDto | null>(null);
   const [checkedOutBags, setCheckedOutBags] = useState<BagDto[]>([]);
+  const [loadingCheckedOut, setLoadingCheckedOut] = useState(true);
+  const [checkedOutError, setCheckedOutError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchItems();
@@ -36,19 +39,19 @@ function Admin() {
       });
   };
 
-  const fetchCheckedOutBags = () => {
-    const bagsApi = "/api/bags/checkedout";
-    fetch(bagsApi)
-      .then((response) => {
-        return response.json() as Promise<BagDto[]>;
-      })
-      .then((data) => {
-        console.log("checked out bags", data);
-        setCheckedOutBags(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching checked out bags:", error);
-      });
+  const fetchCheckedOutBags = async () => {
+    try {
+      setLoadingCheckedOut(true);
+      const data = await BagService.getCheckedOutBags();
+      setCheckedOutBags(data);
+      setCheckedOutError(null);
+    } catch (error) {
+      console.error("Error fetching checked out bags:", error);
+      setCheckedOutError("Failed to load checked out bags.");
+      setCheckedOutBags([]);
+    } finally {
+      setLoadingCheckedOut(false);
+    }
   };
 
   const handleToggleFeatured = async (itemId: number, currentFeatured: boolean) => {
@@ -165,7 +168,33 @@ function Admin() {
   return (
     <div className="card">
       <h2>Admin Panel</h2>
-      
+
+      <section style={{ marginBottom: "30px" }}>
+        <h3>Checked Out Bags</h3>
+        {loadingCheckedOut ? (
+          <p>Loading checked out bags...</p>
+        ) : checkedOutError ? (
+          <p>{checkedOutError}</p>
+        ) : checkedOutBags.length > 0 ? (
+          checkedOutBags.map((bag) => (
+            <div key={bag.id} className="card" style={{ marginBottom: "16px" }}>
+              <h4>Bag #{bag.id}</h4>
+              <p>Status: {bag.status || "Checked out"}</p>
+              <p>Total: ${bag.subtotal.toFixed(2)}</p>
+              <div>
+                {bag.items.map((item) => (
+                  <div key={item.itemId} style={{ marginBottom: "10px" }}>
+                    {item.name} - Quantity: {item.quantity} - ${item.lineTotal.toFixed(2)}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))
+        ) : (
+          <p>No checked out bags.</p>
+        )}
+      </section>
+
       <h3>{editingItem ? 'Edit Item' : 'Add New Item'}</h3>
       <form onSubmit={handleAddItem} style={{ marginBottom: "20px" }}>
         <div>
@@ -234,23 +263,6 @@ function Admin() {
         <p>Loading items...</p>
       )}
       
-      <h3>Checked Out Bags</h3>
-      {checkedOutBags.length > 0 ? (
-        checkedOutBags.map((bag) => (
-          <div key={bag.id} className="card" style={{ marginBottom: "20px" }}>
-            <h4>Bag #{bag.id} - Total: ${bag.subtotal.toFixed(2)}</h4>
-            <ul>
-              {bag.items.map((item) => (
-                <li key={item.itemId}>
-                  {item.name} - Quantity: {item.quantity} - ${item.lineTotal.toFixed(2)}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))
-      ) : (
-        <p>No checked out bags.</p>
-      )}
     </div>
   );
 }
