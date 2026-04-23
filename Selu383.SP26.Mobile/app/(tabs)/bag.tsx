@@ -5,11 +5,38 @@ import {
   StyleSheet,
   Text,
   View,
+  Modal,
 } from "react-native";
 import { useBag } from "../../context/BagContext";
+import { router } from "expo-router";
+import { useState, useEffect } from "react";
 
 export default function BagTab() {
   const { bag, loading, remove, clear, refresh } = useBag();
+  const [user, setUser] = useState(null);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+
+  // Fetch user from backend (cookie-based)
+  async function fetchUser() {
+    try {
+      const res = await fetch(
+        "https://selu383-sp26-p03-g01.azurewebsites.net/api/authentication/me",
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+
+      if (!res.ok) return null;
+      return await res.json();
+    } catch {
+      return null;
+    }
+  }
+
+  useEffect(() => {
+    fetchUser().then(setUser);
+  }, []);
 
   if (loading) {
     return (
@@ -62,6 +89,20 @@ export default function BagTab() {
         <Text style={styles.subtotalText}>
           Subtotal: ${bag.subtotal.toFixed(2)}
         </Text>
+
+        <Pressable
+          style={styles.checkoutButton}
+          onPress={() => {
+            if (!user) {
+              setShowLoginPrompt(true);
+              return;
+            }
+            router.push("/checkout");
+          }}
+        >
+          <Text style={styles.checkoutText}>Checkout</Text>
+        </Pressable>
+
         <Pressable
           onPress={clear}
           style={({ pressed }) => [
@@ -72,9 +113,49 @@ export default function BagTab() {
           <Text style={styles.clearButtonText}>Clear Bag</Text>
         </Pressable>
       </View>
+
+      {/* LOGIN MODAL */}
+      <Modal
+        transparent
+        animationType="fade"
+        visible={showLoginPrompt}
+        onRequestClose={() => setShowLoginPrompt(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBox}>
+            <Text style={styles.modalTitle}>Earn Reward Points</Text>
+            <Text style={styles.modalText}>
+              Log in to earn points for this purchase.
+            </Text>
+
+            <View style={styles.modalButtons}>
+              <Pressable
+                style={styles.modalButtonLogin}
+                onPress={() => {
+                  setShowLoginPrompt(false);
+                  router.push("/login");
+                }}
+              >
+                <Text style={styles.modalButtonTextDark}>Login</Text>
+              </Pressable>
+
+              <Pressable
+                style={styles.modalButtonContinue}
+                onPress={() => {
+                  setShowLoginPrompt(false);
+                  router.push("/checkout");
+                }}
+              >
+                <Text style={styles.modalButtonTextLight}>Continue</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -131,6 +212,8 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderColor: "#444",
     backgroundColor: "#333333",
+    flexDirection: "column",
+    gap: 12,
   },
   subtotalText: {
     color: "#d8b4fe",
@@ -144,6 +227,7 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: "center",
     borderRadius: 4,
+    marginTop: 10
   },
   clearButtonText: {
     color: "#362845",
@@ -161,4 +245,82 @@ const styles = StyleSheet.create({
     color: "#d8b4fe",
     fontWeight: "600",
   },
+  checkoutButton: {
+    backgroundColor: "#d8b4fe",
+    padding: 16,
+    alignItems: "center",
+    borderRadius: 4,
+  },
+  checkoutText: {
+    color: "#362845",
+    fontWeight: "800",
+    fontSize: 16,
+  },
+  modalOverlay: {
+  flex: 1,
+  backgroundColor: "rgba(0,0,0,0.6)",
+  justifyContent: "center",
+  alignItems: "center",
+},
+
+modalBox: {
+  width: "80%",
+  backgroundColor: "#362845",
+  padding: 20,
+  borderRadius: 12,
+  borderWidth: 1,
+  borderColor: "#d8b4fe",
+},
+
+modalTitle: {
+  color: "#d8b4fe",
+  fontSize: 22,
+  fontWeight: "700",
+  marginBottom: 10,
+  textAlign: "center",
+},
+
+modalText: {
+  color: "white",
+  fontSize: 16,
+  textAlign: "center",
+  marginBottom: 20,
+},
+
+modalButtons: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+},
+
+modalButtonLogin: {
+  backgroundColor: "#d8b4fe",
+  paddingVertical: 10,
+  paddingHorizontal: 20,
+  borderRadius: 8,
+  flex: 1,
+  marginRight: 8,
+},
+
+modalButtonContinue: {
+  backgroundColor: "transparent",
+  borderWidth: 1,
+  borderColor: "#d8b4fe",
+  paddingVertical: 10,
+  paddingHorizontal: 20,
+  borderRadius: 8,
+  flex: 1,
+  marginLeft: 8,
+},
+
+modalButtonTextDark: {
+  color: "#362845",
+  fontWeight: "700",
+  textAlign: "center",
+},
+
+modalButtonTextLight: {
+  color: "#d8b4fe",
+  fontWeight: "700",
+  textAlign: "center",
+},
 });

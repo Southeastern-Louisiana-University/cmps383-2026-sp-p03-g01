@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 import { useBag } from "../../context/BagContext";
+import { router } from "expo-router";
 
 type Item = {
   id: number;
@@ -19,6 +20,12 @@ type Item = {
   imageUrl: string;
 };
 
+type UserDto = {
+  id: number;
+  userName: string;
+  roles: string[];
+};
+
 type Location = { id: number; name: string };
 
 export default function HomeScreen() {
@@ -26,10 +33,22 @@ export default function HomeScreen() {
   const [items, setItems] = useState<Item[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const [user, setUser] = useState<UserDto | null>(null);
   const bag = useBag();
 
-  // FIX: Moved inside HomeScreen so it can access setTracks, setLoading, etc.
+  async function fetchUser() {
+    const res = await fetch(
+      "https://selu383-sp26-p03-g01.azurewebsites.net/api/authentication/me",
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
+
+    if (!res.ok) return null;
+    return await res.json();
+  }
+
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -41,7 +60,6 @@ export default function HomeScreen() {
       const itemsData = await itemsRes.json();
       const locationsData = await locationsRes.json();
 
-      // Better handling of response data structure
       const rawItems = Array.isArray(itemsData)
         ? itemsData
         : itemsData?.items || [];
@@ -73,6 +91,14 @@ export default function HomeScreen() {
 
   useEffect(() => {
     fetchData();
+
+  async function loadUser() {
+    const u = await fetchUser();
+    console.log("USER FROM BACKEND:", u);
+    setUser(u);
+  }
+
+    loadUser();
   }, []);
 
   const renderCard = ({ item }: { item: any }) => {
@@ -111,7 +137,6 @@ export default function HomeScreen() {
           ]}
           onPress={async () => {
             try {
-              // Ensure your BagContext handles the ID correctly
               await bag.add(item.id);
             } catch (e) {
               console.log("Bag error:", e);
@@ -135,12 +160,25 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.headerRow}>
-        <Image
-          source={require("../../assets/images/icon.png")}
-          style={styles.icon}
-        />
-        <Text style={styles.title}>Caffeinated Lions</Text>
-      </View>
+          <Image
+            source={require("../../assets/images/icon.png")}
+            style={styles.icon}
+          />
+
+          <Text style={styles.title}>Caffeinated Lions</Text>
+
+          <Pressable
+            style={styles.loginButton}
+            onPress={() => {
+              if (!user) router.push("/login");
+              else router.push("/profile");
+            }}
+          >
+            <Text style={styles.loginButtonText}>
+              {user ? (user.userName?.slice(0, 5) ?? "User") : "Login"}
+            </Text>
+          </Pressable>
+        </View>
 
       <View style={styles.segmentContainer}>
         {(["items", "rewards", "locations"] as const).map((t) => (
@@ -254,6 +292,21 @@ const styles = StyleSheet.create({
     color: "#362845",
     fontWeight: "bold",
   },
+
+  loginButton: {
+    marginLeft: "auto",
+    backgroundColor: "#d8b4fe",
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+  },
+
+  loginButtonText: {
+    color: "black",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+
   emptyState: { marginTop: 40, alignItems: "center" },
   emptyText: { color: "#aaa", fontSize: 18, fontWeight: "500" },
 });

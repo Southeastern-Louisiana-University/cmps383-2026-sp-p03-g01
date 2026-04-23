@@ -9,39 +9,45 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 
-export default function LoginScreen() {
+export default function SignupScreen() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = async () => {
+  const handleSignup = async () => {
     try {
       const res = await fetch(
-        "https://selu383-sp26-p03-g01.azurewebsites.net/api/authentication/login",
+        "https://selu383-sp26-p03-g01.azurewebsites.net/api/authentication/register",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          credentials: "include", 
+          credentials: "include", // important for cookie login
           body: JSON.stringify({
-            userName: username, 
+            userName: username,
             password: password,
+            roles: ["User"],
           }),
         }
       );
 
       if (!res.ok) {
-        alert("Invalid username or password");
+        alert("Signup failed — username may already exist");
         return;
       }
 
-      console.log("Logged in successfully");
+      console.log("Signed up successfully");
 
-      router.replace("/");
+      // Backend sets the cookie automatically.
+      // No need for AuthContext anymore.
+
+      setTimeout(() => {
+        router.replace("/");
+      }, 50);
     } catch (err) {
-      console.log("Login error:", err);
+      console.log("Signup error:", err);
     }
   };
-
+  
   return (
     <View style={styles.container}>
       <Pressable onPress={() => router.replace("/")} style={styles.backButton}>
@@ -54,7 +60,7 @@ export default function LoginScreen() {
             source={require("../assets/images/icon.png")}
             style={styles.icon}
           />
-          <Text style={styles.title}>Caffeinated Lions</Text>
+          <Text style={styles.title}>Create Account</Text>
         </View>
 
         <TextInput
@@ -85,16 +91,12 @@ export default function LoginScreen() {
           </Pressable>
         </View>
 
-        <Pressable style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Login</Text>
+        <Pressable style={styles.button} onPress={handleSignup}>
+          <Text style={styles.buttonText}>Sign Up</Text>
         </Pressable>
 
-        <Pressable onPress={() => router.push("/signup")}>
-          <Text
-            style={{ color: "#d8b4fe", textAlign: "center", marginTop: 20 }}
-          >
-            Don't have an account? Sign Up
-          </Text>
+        <Pressable onPress={() => router.push("/login")}>
+          <Text style={styles.link}>Already have an account? Login</Text>
         </Pressable>
       </View>
     </View>
@@ -153,6 +155,12 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontSize: 18,
     color: "#000",
+  },
+  link: {
+    color: "#d8b4fe",
+    textAlign: "center",
+    marginTop: 20,
+    fontWeight: "600",
   },
   centerBox: {
     flex: 1,
