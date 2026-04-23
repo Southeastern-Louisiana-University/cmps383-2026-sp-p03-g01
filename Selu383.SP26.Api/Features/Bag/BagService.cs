@@ -6,6 +6,7 @@ using Selu383.SP26.Api.Features.Bag;
 using Selu383.SP26.Api.Features.Items;
 using Selu383.SP26.Api.Features.Rewards;
 using System.Security.Claims;
+using System.Collections.Generic;
 
 namespace Selu383.SP26.Api.Features.Bag;
 
@@ -185,6 +186,15 @@ public class BagService : IBagService
         await _db.SaveChangesAsync();
     }
 
+    public async Task<List<Bag>> GetCheckedOutBagsAsync()
+    {
+        return await _db.Set<Bag>()
+            .Where(b => b.Status == BagStatus.CheckedOut)
+            .Include(b => b.Items)
+            .ThenInclude(i => i.Item)
+            .ToListAsync();
+    }
+
     public async Task RemoveItemAsync(int itemId)
     {
         var bag = await GetOrCreateBagAsync();
@@ -281,6 +291,18 @@ public class BagService : IBagService
         bag.Status = BagStatus.CheckedOut;
         bag.UpdateAt = DateTime.UtcNow;
 
+        await _db.SaveChangesAsync();
+    }
+
+    public async Task MarkBagCompletedAsync(int bagId)
+    {
+       var bag = await _db.Set<Bag>().FindAsync(bagId);
+        if (bag == null)
+            throw new KeyNotFoundException("Bag not found");
+        if (bag.Status != BagStatus.CheckedOut)
+            throw new InvalidOperationException("Only checked out bags can be marked as completed");
+        bag.Status = BagStatus.Completed;
+        bag.UpdateAt = DateTime.UtcNow;
         await _db.SaveChangesAsync();
     }
 

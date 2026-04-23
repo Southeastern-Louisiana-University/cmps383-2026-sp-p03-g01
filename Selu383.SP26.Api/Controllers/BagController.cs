@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Selu383.SP26.Api.Data;
 using Selu383.SP26.Api.Features.Items;
+using Selu383.SP26.Api.Features.Auth;
 
 
 namespace Selu383.SP26.Api.Controllers
@@ -109,6 +110,46 @@ namespace Selu383.SP26.Api.Controllers
             }
             catch (InvalidOperationException ex) { return BadRequest(ex.Message); }
         }
+
+        [HttpGet("checkedout")]
+        [Authorize(Roles = RoleNames.Admin + ", " + RoleNames.Manager + ", " + RoleNames.Employee)]
+        public async Task<ActionResult<IEnumerable<BagDto>>> GetCheckedOutBags()
+        {
+            var bags = await _bagsService.GetCheckedOutBagsAsync();
+
+            var dtos = bags.Select(b => new BagDto
+            {
+                Id = b.Id,
+                Items = b.Items.Select(i => new BagItemDto
+                {
+                    ItemId = i.ItemId,
+                    Name = i.Item?.Name ?? string.Empty,
+                    Price = i.UnitPriceSnapshot,
+                    Quantity = i.Quantity
+                }).ToList(),
+                Subtotal = b.Items.Sum(i => i.LineTotal)
+            });
+
+            return Ok(dtos);
+        }
+
+        [HttpPost("{bagId}/complete")]
+        [Authorize(Roles = RoleNames.Admin + ", " + RoleNames.Manager + ", " + RoleNames.Employee)]
+        public async Task<IActionResult> MarkBagCompleted([FromRoute] int bagId)
+        {
+            try
+            {
+                await _bagsService.MarkBagCompletedAsync(bagId);
+                return Ok(new
+                {
+                    message = "Bag marked as completed"
+                });
+            }
+            catch (KeyNotFoundException) { return NotFound(); }
+            catch (InvalidOperationException ex) { return BadRequest(ex.Message); }
+        }
+
+
     }
 
 }
