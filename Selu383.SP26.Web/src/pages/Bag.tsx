@@ -121,7 +121,7 @@ function Bag() {
                                 onChange={(e) => setPointsToUse(Math.max(0, parseInt(e.target.value) || 0))}
                             />
                             <p className="points-info">
-                                Each point is worth $0.01. Maximum discount: ${((bag?.subtotal || 0) * 0.1).toFixed(2)}
+                                Maximum discount: ${((bag?.subtotal || 0) * 0.1).toFixed(2)}
                             </p>
                         </div>
                     </div>
