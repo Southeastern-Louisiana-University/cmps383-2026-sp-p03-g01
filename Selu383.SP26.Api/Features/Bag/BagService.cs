@@ -6,6 +6,7 @@ using Selu383.SP26.Api.Features.Bag;
 using Selu383.SP26.Api.Features.Items;
 using Selu383.SP26.Api.Features.Rewards;
 using System.Security.Claims;
+using System.Collections.Generic;
 
 namespace Selu383.SP26.Api.Features.Bag;
 
@@ -183,6 +184,15 @@ public class BagService : IBagService
             });
         }
         await _db.SaveChangesAsync();
+    }
+
+    public async Task<List<Bag>> GetCheckedOutBagsAsync()
+    {
+        return await _db.Set<Bag>()
+            .Where(b => b.Status == BagStatus.CheckedOut)
+            .Include(b => b.Items)
+            .ThenInclude(i => i.Item)
+            .ToListAsync();
     }
 
     public async Task RemoveItemAsync(int itemId)
