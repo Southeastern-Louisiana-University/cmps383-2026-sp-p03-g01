@@ -12,5 +12,6 @@ namespace Selu383.SP26.Api.Features.Bag
         Task CheckoutAsync(int pointsToUse);
 
         Task<List<Bag>> GetCheckedOutBagsAsync();
+        Task MarkBagCompletedAsync(int bagId);
     }
 }
